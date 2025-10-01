@@ -6,10 +6,11 @@ class AppStrings{
   static const String retry = 'Retry';
   static const String noInternet = 'No Internet Connection';
 
-  //Views
-  static const String splashView = 'SplashView';
-  static const String errorView = 'ErrorView';
-  static const String homeView = 'HomeView';
+  //NavView
+  static const String chats = 'Chats';
+  static const String users = 'Users';
+  static const String settings = 'Settings';
+
 
   //APIs
   static const String openRouterUrl = 'https://openrouter.ai/api/v1/chat/completions';
@@ -22,6 +23,7 @@ class AppStrings{
   static const String hiveServiceLog = 'Hive Service => ';
   static const String connectivityServiceLog = 'Connectivity Service => ';
   static const String connectivityRepoLog = 'Connectivity Repo => ';
+  static const String themeRepoLog = 'Theme Repo => ';
 
   //Hive
   static const String themeKey = 'ThemeKey';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jonnverse/services/navigation_service.dart';
+import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
 
 class SnackBarService {

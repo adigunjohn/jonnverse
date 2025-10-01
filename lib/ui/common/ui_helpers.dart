@@ -4,7 +4,8 @@ double screenWidth(BuildContext context) => MediaQuery.sizeOf(context).width;
 double screenHeight(BuildContext context) => MediaQuery.sizeOf(context).height;
 
 //IconSize
-const double splashIconSize = 100;
+const double splashIconSize = 175;
+const double bottomNavBarIcon = 20;
 
 
 

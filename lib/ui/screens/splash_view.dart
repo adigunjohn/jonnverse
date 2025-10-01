@@ -1,21 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:jonnverse/app/locator.dart';
-import 'package:jonnverse/services/navigation_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jonnverse/app/config/locator.dart';
+import 'package:jonnverse/app/config/routes.dart';
+import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
-import 'package:jonnverse/ui/screens/home/home_view.dart';
+import 'package:jonnverse/ui/screens/home_view.dart';
 
-class SplashView extends StatefulWidget {
+class SplashView extends ConsumerStatefulWidget {
   const SplashView({super.key});
-  static const String id = AppStrings.splashView;
+  static const String id = Routes.splashView;
 
   @override
-  State<SplashView> createState() => _SplashViewState();
+  ConsumerState<SplashView> createState() => _SplashViewState();
 }
 
-class _SplashViewState extends State<SplashView> {
+class _SplashViewState extends ConsumerState<SplashView> {
   @override
   void initState() {
     super.initState();

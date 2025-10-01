@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jonnverse/ui/screens/home/home_view.dart';
+import 'package:jonnverse/ui/screens/home_view.dart';
 
 class NavigationService{
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -8,7 +8,7 @@ class NavigationService{
     if(navigatorKey.currentState!=null){
       return navigatorKey.currentState!.pushNamed(routeName);
     }else{
-      return Future.value();
+      throw StateError('NavigationService navigatorKey is not attached to a Navigator.');
     }
 
   }
@@ -16,7 +16,7 @@ class NavigationService{
     if(navigatorKey.currentState!=null){
       return navigatorKey.currentState!.pushAndRemoveUntil(MaterialPageRoute(builder: (_)=> const HomeView()),(route)=>false);
     }else{
-      return Future.value();
+      throw StateError('NavigationService navigatorKey is not attached to a Navigator.');
     }
 
   }
@@ -25,14 +25,14 @@ class NavigationService{
     if(navigatorKey.currentState!=null){
       return navigatorKey.currentState!.push(MaterialPageRoute(builder: (_) => routeWidget));
     }else{
-      return Future.value();
+      throw StateError('NavigationService navigatorKey is not attached to a Navigator.');
     }
   }
   void pop(){
     if(navigatorKey.currentState!=null){
       return navigatorKey.currentState!.pop();
     }else{
-      // return Future.value();
+      throw StateError('NavigationService navigatorKey is not attached to a Navigator.');
     }
   }
 
@@ -40,7 +40,7 @@ class NavigationService{
     if(navigatorKey.currentState!=null){
       return navigatorKey.currentState!.pushReplacement(MaterialPageRoute(builder: (_) => routeWidget));
     }else{
-      return Future.value();
+      throw StateError('NavigationService navigatorKey is not attached to a Navigator.');
     }
 
   }

@@ -8,7 +8,11 @@ class AppTheme {
     scaffoldBackgroundColor: kCGrey100Color,
     textTheme: TextTheme(
       titleLarge: kTSplashText.copyWith(color: kCBlackColor),
-      bodyMedium: kTTextSize16.copyWith(color: kCBlackColor)
+      bodyLarge: kTTextSize18.copyWith(color: kCBlackColor),
+      bodyMedium: kTTextSize16.copyWith(color: kCBlackColor),
+      bodySmall: kTTextSize15.copyWith(color: kCBlackColor),
+      labelSmall: kTTextSize12.copyWith(color: kCBlackColor),
+      displaySmall: kTNavBarText,
     ),
     iconTheme: const IconThemeData(color: kCBlackColor),
   );
@@ -19,7 +23,11 @@ class AppTheme {
     scaffoldBackgroundColor: kCGrey900Color,
     textTheme: TextTheme(
       titleLarge: kTSplashText.copyWith(color: kCWhiteColor),
-        bodyMedium: kTTextSize16.copyWith(color: kCWhiteColor)
+      bodyLarge: kTTextSize18.copyWith(color: kCWhiteColor),
+      bodyMedium: kTTextSize16.copyWith(color: kCWhiteColor),
+      bodySmall: kTTextSize15.copyWith(color: kCWhiteColor),
+      labelSmall: kTTextSize12.copyWith(color: kCWhiteColor),
+      displaySmall: kTNavBarText,
     ),
     iconTheme: const IconThemeData(color: kCWhiteColor),
   );

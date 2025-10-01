@@ -1,6 +1,6 @@
-import 'package:jonnverse/app/locator.dart';
-import 'package:jonnverse/services/connectivity_service.dart';
-import 'package:jonnverse/services/snackbar_service.dart';
+import 'package:jonnverse/app/config/locator.dart';
+import 'package:jonnverse/core/services/connectivity_service.dart';
+import 'package:jonnverse/core/services/snackbar_service.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 
 class ConnectivityRepo{

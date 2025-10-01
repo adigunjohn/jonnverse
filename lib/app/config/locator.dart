@@ -1,9 +1,9 @@
 import 'package:get_it/get_it.dart';
-import 'package:jonnverse/services/file_picker_service.dart';
-import 'package:jonnverse/services/firebase_service.dart';
-import 'package:jonnverse/services/hive_service.dart';
-import 'package:jonnverse/services/navigation_service.dart';
-import 'package:jonnverse/services/snackbar_service.dart';
+import 'package:jonnverse/core/services/file_picker_service.dart';
+import 'package:jonnverse/core/services/firebase_service.dart';
+import 'package:jonnverse/core/services/hive_service.dart';
+import 'package:jonnverse/core/services/navigation_service.dart';
+import 'package:jonnverse/core/services/snackbar_service.dart';
 
 GetIt locator = GetIt.instance;
 void setupLocator(){

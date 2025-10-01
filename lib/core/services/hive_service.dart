@@ -18,19 +18,26 @@ class HiveService{
     try {
       return themeBox.get(AppStrings.themeKey, defaultValue: ThemeMode.system);
     } catch (e) {
-      log('${AppStrings.hiveServiceLog}getThemeMode failed: $e');
-      return null;
+      throw Exception('${AppStrings.hiveServiceLog}getThemeMode failed: $e');
     }
   }
 
-  void updateThemeMode({required ThemeMode theme}) {
-      themeBox.put(AppStrings.themeKey, theme);
-      log('${AppStrings.hiveServiceLog}theme mode updated to $theme');
+  Future<void> updateThemeMode({required ThemeMode theme}) async {
+      try{
+        await themeBox.put(AppStrings.themeKey, theme);
+        log('${AppStrings.hiveServiceLog}theme mode updated to $theme');
+      }catch(e){
+        throw Exception('${AppStrings.hiveServiceLog}theme mode update failed: $e');
+      }
   }
 
   Future<void> clearThemeSettingsStorage() async {
-    await themeBox.clear();
-    log('${AppStrings.hiveServiceLog}Theme box has been cleared');
+      try{
+        await themeBox.clear();
+        log('${AppStrings.hiveServiceLog}Theme box has been cleared');
+      }catch(e){
+        throw Exception('${AppStrings.hiveServiceLog}theme box clearing failed: $e');
+      }
   }
 
   // void updateMessageList({required List<Message> messages, required Box<Message> box}) {
@@ -48,8 +55,13 @@ class HiveService{
   // }
 
   static Future<void> closeHive() async {
-    await Hive.close();
-    log('${AppStrings.hiveServiceLog}All opened local storage boxes have been closed');
+      try{
+        await Hive.close();
+        log('${AppStrings.hiveServiceLog}All opened local storage boxes have been closed');
+      } catch(e){
+        throw Exception('${AppStrings.hiveServiceLog}Failed to close hive: $e');
+      }
+
   }
 
 }
