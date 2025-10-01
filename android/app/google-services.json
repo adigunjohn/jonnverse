@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "135445532551",
+    "project_id": "jonnverse",
+    "storage_bucket": "jonnverse.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135445532551:android:6ddcd284d1ab0df0784d22",
+        "android_client_info": {
+          "package_name": "com.example.jonnverse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBatF2g70ZstE38zKepM2LhVq_K_aZ_D9c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
