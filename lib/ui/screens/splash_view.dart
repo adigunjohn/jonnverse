@@ -7,7 +7,7 @@ import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
-import 'package:jonnverse/ui/screens/home_view.dart';
+import 'package:jonnverse/ui/screens/nav_view.dart';
 
 class SplashView extends ConsumerStatefulWidget {
   const SplashView({super.key});
@@ -21,7 +21,7 @@ class _SplashViewState extends ConsumerState<SplashView> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 3), () => locator<NavigationService>().push(HomeView()));
+    Future.delayed(Duration(seconds: 3), () => locator<NavigationService>().pushNamed(NavView.id));
   }
   @override
   Widget build(BuildContext context) {

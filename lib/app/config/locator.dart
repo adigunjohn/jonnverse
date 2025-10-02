@@ -1,4 +1,7 @@
 import 'package:get_it/get_it.dart';
+import 'package:jonnverse/core/repos/connectivity_repo.dart';
+import 'package:jonnverse/core/repos/theme_repo.dart';
+import 'package:jonnverse/core/services/connectivity_service.dart';
 import 'package:jonnverse/core/services/file_picker_service.dart';
 import 'package:jonnverse/core/services/firebase_service.dart';
 import 'package:jonnverse/core/services/hive_service.dart';
@@ -12,4 +15,7 @@ void setupLocator(){
   locator.registerLazySingleton(() => FilePickerService());
   locator.registerLazySingleton(() => HiveService());
   locator.registerLazySingleton(() => SnackBarService());
+  locator.registerLazySingleton(() => ConnectivityService());
+  locator.registerLazySingleton(() => ThemeRepo());
+  locator.registerLazySingleton(() => ConnectivityRepo());
 }

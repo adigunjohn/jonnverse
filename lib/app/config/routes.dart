@@ -34,7 +34,7 @@ class Routes {
       case GeminiChatView.id:
         return MaterialPageRoute(builder: (_) => const GeminiChatView(),);
       case NavView.id:
-        return MaterialPageRoute(builder: (_) => const NavView(),);
+        return MaterialPageRoute(builder: (_) => NavView(),);
       default:
         return MaterialPageRoute(builder: (_) => const ErrorView());
     }

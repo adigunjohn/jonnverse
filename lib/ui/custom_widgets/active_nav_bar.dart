@@ -28,6 +28,6 @@ class ActiveNavBar extends StatelessWidget {
             ],
           ),
         ),),
-    );;
+    );
   }
 }

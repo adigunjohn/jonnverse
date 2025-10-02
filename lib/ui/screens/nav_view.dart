@@ -10,13 +10,16 @@ import 'package:jonnverse/ui/screens/settings_view.dart';
 import 'package:jonnverse/ui/screens/users_view.dart';
 
 class NavView extends ConsumerWidget {
-  const NavView({super.key});
+  NavView({super.key});
   static const String id = Routes.navView;
+
+  final PageController _pageController = PageController();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nav = ref.watch(navProvider);
     return Scaffold(
       body: PageView(
+        controller: _pageController,
         onPageChanged: (value) => ref.read(navProvider.notifier).updateIndex(value),
         children: [
           HomeView(),
@@ -26,12 +29,14 @@ class NavView extends ConsumerWidget {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: nav,
-          onTap: (value) => ref.read(navProvider.notifier).updateIndex(value),
+          onTap: (value){
+            _pageController.jumpToPage(value);
+          },
           type: BottomNavigationBarType.shifting,
           items:[
-            BottomNavigationBarItem(icon: Icon(CupertinoIcons.chat_bubble_2), activeIcon: ActiveNavBar(text: AppStrings.chats, icon: CupertinoIcons.chat_bubble_2_fill)),
-            BottomNavigationBarItem(icon: Icon(CupertinoIcons.person_2), activeIcon: ActiveNavBar(text: AppStrings.users, icon: CupertinoIcons.person_2_alt)),
-            BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), activeIcon: ActiveNavBar(text: AppStrings.settings, icon: Icons.settings)),
+            BottomNavigationBarItem(icon: Icon(CupertinoIcons.chat_bubble_2), activeIcon: ActiveNavBar(text: AppStrings.chats, icon: CupertinoIcons.chat_bubble_2_fill),label: ''),
+            BottomNavigationBarItem(icon: Icon(CupertinoIcons.person_2), activeIcon: ActiveNavBar(text: AppStrings.users, icon: CupertinoIcons.person_2_alt), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), activeIcon: ActiveNavBar(text: AppStrings.settings, icon: Icons.settings), label: ''),
           ]),
     );
   }

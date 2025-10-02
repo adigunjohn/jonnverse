@@ -29,7 +29,7 @@ class Jonnverse extends ConsumerWidget {
       title: AppStrings.jonnverse,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: theme,
+      themeMode: ThemeMode.light,
       home: const SplashView(),
     );
   }

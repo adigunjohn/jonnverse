@@ -6,6 +6,10 @@ class AppStrings{
   static const String retry = 'Retry';
   static const String noInternet = 'No Internet Connection';
 
+  //ErrorView
+  static const String errorText = 'Something went wrong, this page does not exist';
+  static const String errorTitle = 'Unknown Page';
+
   //NavView
   static const String chats = 'Chats';
   static const String users = 'Users';

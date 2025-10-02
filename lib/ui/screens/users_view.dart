@@ -11,6 +11,8 @@ class UsersView extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppStrings.users, style: Theme.of(context).textTheme.bodyLarge,),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: SafeArea(child: Center(child: Text('Users View'),),),
     );

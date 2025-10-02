@@ -11,6 +11,8 @@ class SettingsView extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppStrings.settings, style: Theme.of(context).textTheme.bodyLarge,),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: SafeArea(child: Center(child: Text('Settings View'),),),
     );
