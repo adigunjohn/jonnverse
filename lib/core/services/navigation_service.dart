@@ -10,7 +10,13 @@ class NavigationService{
     }else{
       throw StateError('NavigationService navigatorKey is not attached to a Navigator.');
     }
-
+  }
+  Future<dynamic> replaceNamed(String routeName){
+    if(navigatorKey.currentState!=null){
+      return navigatorKey.currentState!.pushReplacementNamed(routeName);
+    }else{
+      throw StateError('NavigationService navigatorKey is not attached to a Navigator.');
+    }
   }
   Future<dynamic> pushToDashBoard(){
     if(navigatorKey.currentState!=null){

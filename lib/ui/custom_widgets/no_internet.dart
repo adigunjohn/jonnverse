@@ -12,7 +12,7 @@ class NoInternet extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Icon(Icons.wifi_off_outlined, color: kCBlueColor,size: 30,),
+        const Icon(Icons.wifi_off_outlined, color: kCBlueShadeColor,size: 30,),
         const SizedBox(height: 8,),
         Text(AppStrings.noInternet, style: Theme.of(context).textTheme.bodyMedium,),
         const SizedBox(height: 8,),
@@ -21,7 +21,7 @@ class NoInternet extends StatelessWidget {
           child: Container(
             width: 100,
             decoration: BoxDecoration(
-              color: kCBlueColor,
+              color: kCBlueShadeColor,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Center(child: Padding(

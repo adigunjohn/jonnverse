@@ -7,7 +7,7 @@ import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
-import 'package:jonnverse/ui/screens/nav_view.dart';
+import 'package:jonnverse/ui/screens/login_view.dart';
 
 class SplashView extends ConsumerStatefulWidget {
   const SplashView({super.key});
@@ -21,12 +21,12 @@ class _SplashViewState extends ConsumerState<SplashView> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 3), () => locator<NavigationService>().pushNamed(NavView.id));
+    Future.delayed(Duration(seconds: 3), () => locator<NavigationService>().replaceNamed(LoginView.id));
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: kCBlueShadeColor,
       body: SafeArea(
         child: Stack(
           children: [
@@ -41,7 +41,7 @@ class _SplashViewState extends ConsumerState<SplashView> {
               alignment: Alignment.center,
                 child: Transform.rotate(
                   angle: 25,
-                    child: Icon(CupertinoIcons.chat_bubble_2_fill, size: splashIconSize, color: kCBlueColor,),),
+                    child: Icon(CupertinoIcons.chat_bubble_2_fill, size: splashIconSize, color: kCWhiteColor,),),
             ),
           ],
         ),

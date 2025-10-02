@@ -13,7 +13,7 @@ class ActiveNavBar extends StatelessWidget {
       child: Container(
         width: 120,
         decoration: BoxDecoration(
-          color: kCBlueColor,
+          color: kCBlueShadeColor,
           borderRadius: BorderRadius.circular(30),
         ),
         child: Padding(
@@ -22,7 +22,7 @@ class ActiveNavBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(icon, color: kCWhiteColor, size: bottomNavBarIcon,),
+              Icon(icon, color: kCWhiteColor, size: bottomNavBarIconSize,),
               const SizedBox(width: 3,),
               Text(text,style: Theme.of(context).textTheme.displaySmall,),
             ],

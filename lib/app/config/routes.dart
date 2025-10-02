@@ -3,7 +3,10 @@ import 'package:jonnverse/ui/screens/chat_view.dart';
 import 'package:jonnverse/ui/screens/error_view.dart';
 import 'package:jonnverse/ui/screens/gemini_chat_view.dart';
 import 'package:jonnverse/ui/screens/home_view.dart';
+import 'package:jonnverse/ui/screens/login_view.dart';
 import 'package:jonnverse/ui/screens/nav_view.dart';
+import 'package:jonnverse/ui/screens/register_view.dart';
+import 'package:jonnverse/ui/screens/reset_password_view.dart';
 import 'package:jonnverse/ui/screens/settings_view.dart';
 import 'package:jonnverse/ui/screens/splash_view.dart';
 import 'package:jonnverse/ui/screens/users_view.dart';
@@ -18,6 +21,9 @@ class Routes {
   static const String usersView = '/users-view';
   static const String settingsView = '/settings-view';
   static const String navView = '/nav-view';
+  static const String loginView = '/login-view';
+  static const String registerView = '/register-view';
+  static const String resetPasswordView = '/reset-password-view';
 
   static Route<RouteSettings> generateRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
@@ -28,13 +34,19 @@ class Routes {
       case SettingsView.id:
         return MaterialPageRoute(builder: (_) => const SettingsView(),);
       case UsersView.id:
-        return MaterialPageRoute(builder: (_) => const UsersView(),);
+        return MaterialPageRoute(builder: (_) => UsersView(),);
       case ChatView.id:
         return MaterialPageRoute(builder: (_) => const ChatView(),);
       case GeminiChatView.id:
         return MaterialPageRoute(builder: (_) => const GeminiChatView(),);
       case NavView.id:
         return MaterialPageRoute(builder: (_) => NavView(),);
+      case LoginView.id:
+        return MaterialPageRoute(builder: (_) => const LoginView(),);
+      case RegisterView.id:
+        return MaterialPageRoute(builder: (_) => const RegisterView(),);
+      case ResetPasswordView.id:
+        return MaterialPageRoute(builder: (_) => const ResetPasswordView(),);
       default:
         return MaterialPageRoute(builder: (_) => const ErrorView());
     }

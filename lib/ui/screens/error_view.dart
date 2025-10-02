@@ -9,8 +9,7 @@ class ErrorView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-      title: Text(AppStrings.errorTitle, style: Theme.of(context).textTheme.bodyLarge,),
-        centerTitle: true,
+      title: Text(AppStrings.errorTitle, style: Theme.of(context).textTheme.displayLarge,),
     ),
       body: Center(child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0),
