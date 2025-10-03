@@ -7,6 +7,7 @@ class AppTheme {
     colorScheme: const ColorScheme.light(),
     scaffoldBackgroundColor: kCGrey100Color,
     hintColor: kCGrey300Color,
+    cardColor: kCGrey200Color,
     appBarTheme: AppBarTheme(
         color: kCBlueShadeColor,
       centerTitle: true,
@@ -32,6 +33,7 @@ class AppTheme {
     colorScheme: const ColorScheme.dark(),
     scaffoldBackgroundColor: kCBlack87Color,
     hintColor: kCGrey900Color,
+    cardColor: kCGrey800Color,
     appBarTheme: AppBarTheme(
       // color: kCDarkAppbarColor,
       centerTitle: true,

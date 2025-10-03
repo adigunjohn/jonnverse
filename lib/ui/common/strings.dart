@@ -39,6 +39,10 @@ class AppStrings{
   static const String emptyUsers = 'No users available';
   static const String availableUsers = 'All available users';
 
+  //ChatView
+  static const String typeMessage = 'Type a message';
+
+
   //SettingsView
   static const String theme = 'Theme';
   static const String mail = 'Email';

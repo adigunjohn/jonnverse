@@ -65,7 +65,7 @@ class UsersView extends ConsumerWidget {
                               userName: AppStrings.randomName,
                               userMail: AppStrings.randomMail,
                               onTap: () {
-                                // _navigationService.push(ChatView(userName: AppStrings.randomName,userMail: AppStrings.randomMail,));
+                                _navigationService.push(ChatView(userName: AppStrings.randomName,userMail: AppStrings.randomMail,));
                               },
                             );
                           },

@@ -53,7 +53,7 @@ class UsersTile extends StatelessWidget {
                   ],
                 ),
               ),
-              Spacer(),
+              SizedBox(width: 10),
               Icon(Icons.chat_outlined, color: kCAccentColor,),
             ],
           ),

@@ -74,7 +74,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             userDp: AppStrings.dp1,
                             userName: AppStrings.randomMail,
                           onTap: (){
-                          //  _navigationService.push(ChatView(userName: AppStrings.randomName,userMail: AppStrings.randomMail,));
+                           _navigationService.push(ChatView(userName: AppStrings.randomName,userMail: AppStrings.randomMail,));
                           },
                         ),
                         ChatTile(

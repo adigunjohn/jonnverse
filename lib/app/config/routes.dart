@@ -8,6 +8,7 @@ import 'package:jonnverse/ui/screens/nav_view.dart';
 import 'package:jonnverse/ui/screens/register_view.dart';
 import 'package:jonnverse/ui/screens/reset_password_view.dart';
 import 'package:jonnverse/ui/screens/settings_view.dart';
+import 'package:jonnverse/ui/screens/show_Image_view.dart';
 import 'package:jonnverse/ui/screens/splash_view.dart';
 import 'package:jonnverse/ui/screens/users_view.dart';
 
@@ -24,6 +25,7 @@ class Routes {
   static const String loginView = '/login-view';
   static const String registerView = '/register-view';
   static const String resetPasswordView = '/reset-password-view';
+  static const String showImageView = '/show-image-view';
 
   static Route<RouteSettings> generateRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
@@ -47,6 +49,8 @@ class Routes {
         return MaterialPageRoute(builder: (_) => const RegisterView(),);
       case ResetPasswordView.id:
         return MaterialPageRoute(builder: (_) => const ResetPasswordView(),);
+      case ShowImageView.id:
+        return MaterialPageRoute(builder: (_) => const ShowImageView(),);
       default:
         return MaterialPageRoute(builder: (_) => const ErrorView());
     }
