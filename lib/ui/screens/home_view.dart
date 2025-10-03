@@ -93,7 +93,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             isAI: true,
                             time: '11:56 AM',
                             badgeCount: 7,
-                            userName: AppStrings.gemini),
+                            userName: AppStrings.geminiFromGoogle,
+                          onTap: (){
+                            _navigationService.push(GeminiChatView());
+                          },
+                        ),
                         ChatTile(
                             time: '11:56 AM',
                             lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',

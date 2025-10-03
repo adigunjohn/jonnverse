@@ -8,7 +8,7 @@ import 'package:jonnverse/ui/screens/nav_view.dart';
 import 'package:jonnverse/ui/screens/register_view.dart';
 import 'package:jonnverse/ui/screens/reset_password_view.dart';
 import 'package:jonnverse/ui/screens/settings_view.dart';
-import 'package:jonnverse/ui/screens/show_Image_view.dart';
+import 'package:jonnverse/ui/screens/show_image_view.dart';
 import 'package:jonnverse/ui/screens/splash_view.dart';
 import 'package:jonnverse/ui/screens/users_view.dart';
 

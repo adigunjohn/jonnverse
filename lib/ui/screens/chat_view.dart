@@ -7,8 +7,8 @@ import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
 import 'package:jonnverse/ui/custom_widgets/chat_bubble.dart';
-import 'package:jonnverse/ui/custom_widgets/jn_textfield.dart';
-import 'package:jonnverse/ui/screens/show_Image_view.dart';
+import 'package:jonnverse/ui/custom_widgets/chat_field.dart';
+import 'package:jonnverse/ui/screens/show_image_view.dart';
 
 class ChatView extends ConsumerStatefulWidget {
   const ChatView({super.key, this.userName, this.userMail});
@@ -24,7 +24,9 @@ class _ChatViewState extends ConsumerState<ChatView> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  List messages = [false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true];
+  List messages = [false, true, false, true, false, true, false, true,
+    false, true, false, true, false, true, false, true
+  ];
   @override
   void dispose() {
     super.dispose();
@@ -100,61 +102,27 @@ class _ChatViewState extends ConsumerState<ChatView> {
                   itemCount: messages.length,
                     itemBuilder: (_,index){
                     final message = messages[index];
-                 return ChatBubble(isSender: message, onTap: (){
+                 return ChatBubble(
+                   isUser: message,
+                   message: 'Hey, I am Jonny',
+                   file: null,
+                   // image: AppStrings.dp,
+                   onTap: (){
                    _navigationService.push(ShowImageView());
                  },);
                 }),
               ))
             ],
                   ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 15.0, right: 15, left: 15),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Row(
-                  spacing: 5,
-                  children: [
-                    Expanded(
-                      child: JnTextField(
-                        controller: _controller,
-                      maxLines: 3,
-                      keyboardType: TextInputType.multiline,
-                      hintText: AppStrings.typeMessage,
-                      suffix: Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: SizedBox(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: (){},
-                                child: Icon(Icons.attach_file, color: kCBlueShadeColor, size: settingsIconSize,),
-                              ),
-                              SizedBox(width: 10),
-                              GestureDetector(
-                                onTap: (){},
-                                child: Icon(Icons.camera_alt_outlined, color: kCBlueShadeColor, size: settingsIconSize,),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),),
-                    ),
-                    GestureDetector(
-                      onTap: (){},
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: kCBlueShadeColor,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.send, color: kCWhiteColor, size: settingsIconSize,),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            ChatField(
+              controller: _controller,
+              fileVisible: true,
+              // image: AppStrings.dp,
+              file: 'my resume.pdf',
+              sendTap: (){},
+              cameraTap: (){},
+              fileTap: (){},
+              onDeleteFile: (){},
             ),
           ],
         ),

@@ -20,14 +20,20 @@ class NavView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final nav = ref.watch(navProvider);
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (value) => ref.read(navProvider.notifier).updateIndex(value),
-        children: [
-          HomeView(),
-          UsersView(),
-          SettingsView()
-        ],
+      body: PopScope(
+        canPop: true,
+        onPopInvokedWithResult: (x,y){
+          ref.read(navProvider.notifier).updateIndex(0);
+        },
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (value) => ref.read(navProvider.notifier).updateIndex(value),
+          children: [
+            HomeView(),
+            UsersView(),
+            SettingsView()
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: nav,

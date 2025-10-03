@@ -10,7 +10,7 @@ class AppStrings{
   static const String errorText = 'Something went wrong, this page does not exist';
   static const String errorTitle = 'Unknown Page';
 
-  //LoginView & RegisterView
+  //LoginView & RegisterView & ResetPasswordView
   static const String welcomeBack = 'Welcome back to Jonnverse';
   static const String welcome = 'Welcome to Jonnverse';
   static const String enterEmail = 'Enter your email';
@@ -24,6 +24,10 @@ class AppStrings{
   static const String register = 'Sign Up';
   static const String registerWithGoogle = 'Sign Up with Google';
   static const String haveAccount = 'You already have an account? Login';
+  static const String resetPassword = 'Reset Password';
+  static const String changePassword = 'Change your password';
+  static const String resetPasswordSubTitle = 'Forgot your password? Type your email and we will send you a link to reset your password.';
+
 
   //NavView
   static const String chats = 'Chats';
@@ -33,7 +37,8 @@ class AppStrings{
   //HomeView
   static const String noChatsYet = 'You don\'t have any chat messages yet...';
   static const String noMessages = 'No messages yet.';
-  static const String gemini = 'Gemini from Google LLC';
+  static const String geminiFromGoogle = 'Gemini from Google LLC';
+  static const String gemini = 'Gemini';
 
   //UserView
   static const String emptyUsers = 'No users available';
