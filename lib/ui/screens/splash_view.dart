@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/app/config/routes.dart';
+import 'package:jonnverse/core/repos/user_repo.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
 import 'package:jonnverse/ui/screens/login_view.dart';
+import 'package:jonnverse/ui/screens/nav_view.dart';
 
 class SplashView extends ConsumerStatefulWidget {
   const SplashView({super.key});
@@ -18,10 +20,17 @@ class SplashView extends ConsumerStatefulWidget {
 }
 
 class _SplashViewState extends ConsumerState<SplashView> {
+  final UserRepo _userRepo = locator<UserRepo>();
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 3), () => locator<NavigationService>().replaceNamed(LoginView.id));
+    Future.delayed(Duration(seconds: 3), (){
+      if(_userRepo.isUserLoggedIn()){
+        locator<NavigationService>().replaceNamed(NavView.id);
+      } else{
+        locator<NavigationService>().replaceNamed(LoginView.id);
+      }
+    });
   }
   @override
   Widget build(BuildContext context) {

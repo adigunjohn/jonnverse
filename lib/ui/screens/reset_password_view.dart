@@ -9,6 +9,7 @@ import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
 import 'package:jonnverse/ui/custom_widgets/jn_button.dart';
 import 'package:jonnverse/ui/custom_widgets/jn_textfield.dart';
+import 'package:jonnverse/ui/custom_widgets/progress_indicator.dart';
 import 'package:jonnverse/ui/screens/nav_view.dart';
 
 
@@ -31,41 +32,44 @@ class _LoginViewState extends ConsumerState<ResetPasswordView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SizedBox(
-          height: screenHeight(context),
-          width: screenWidth(context),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Flexible(
-                  child: Icon(
-                    CupertinoIcons.chat_bubble_2_fill,
-                    size: 120,
-                    color: kCBlueShadeColor,
+      body: ProgressHud(
+        loading: false,
+        child: SafeArea(
+          child: SizedBox(
+            height: screenHeight(context),
+            width: screenWidth(context),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Icon(
+                      CupertinoIcons.chat_bubble_2_fill,
+                      size: 120,
+                      color: kCBlueShadeColor,
+                    ),
                   ),
-                ),
-                SizedBox(height: 15),
-                Text(
-                  AppStrings.resetPasswordSubTitle,
-                  maxLines: 4,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                SizedBox(height: 20),
-                JnTextField(
-                  controller: _emailController,
-                  hintText: AppStrings.enterEmail,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                SizedBox(height: 20),
-                JnButton(onTap: (){
-                  _navigationService.pushNamed(NavView.id);
-                }, text: AppStrings.resetPassword),
-              ],
+                  SizedBox(height: 15),
+                  Text(
+                    AppStrings.resetPasswordSubTitle,
+                    maxLines: 4,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  SizedBox(height: 20),
+                  JnTextField(
+                    controller: _emailController,
+                    hintText: AppStrings.enterEmail,
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  SizedBox(height: 20),
+                  JnButton(onTap: (){
+                    _navigationService.pushNamed(NavView.id);
+                  }, text: AppStrings.resetPassword),
+                ],
+              ),
             ),
           ),
         ),

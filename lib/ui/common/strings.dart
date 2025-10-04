@@ -85,8 +85,12 @@ class AppStrings{
   static const String connectivityServiceLog = 'Connectivity Service => ';
   static const String connectivityRepoLog = 'Connectivity Repo => ';
   static const String themeRepoLog = 'Theme Repo => ';
+  static const String authRepoLog = 'Auth Repo => ';
+  static const String userRepoLog = 'User Repo => ';
 
   //Hive
   static const String themeKey = 'ThemeKey';
+  static const String userKey = 'UserKey';
+  static const String loggedInKey = 'LoggedInKey';
 }
 

@@ -21,7 +21,7 @@ class NavView extends ConsumerWidget {
     final nav = ref.watch(navProvider);
     return Scaffold(
       body: PopScope(
-        canPop: true,
+        canPop: false,
         onPopInvokedWithResult: (x,y){
           ref.read(navProvider.notifier).updateIndex(0);
         },
