@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
 
 class DialogService{
- void showAlertDialog(BuildContext context, {double? height, required String title, String? subtitle, Widget? child,List<Widget>? actions}){
+ void showAlertDialog(BuildContext context, {required String title, String? subtitle, Widget? child,List<Widget>? actions}){
    showDialog(context: context,
        builder: (_){
      return AlertDialog(
@@ -14,9 +14,11 @@ class DialogService{
        content: child ??  Text(
          '$subtitle',
          style: Theme.of(context).textTheme.bodySmall,
+         maxLines: 6,
          overflow: TextOverflow.ellipsis,
        ),
        actions: actions,
+       actionsPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
      );
        }
    );

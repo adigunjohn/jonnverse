@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/app/config/routes.dart';
 import 'package:jonnverse/core/enums/apptheme.dart';
+import 'package:jonnverse/core/services/dialog_service.dart';
+import 'package:jonnverse/core/services/navigation_service.dart';
+import 'package:jonnverse/providers/auth_notifier.dart';
+import 'package:jonnverse/providers/nav_notifier.dart';
 import 'package:jonnverse/providers/theme_notifier.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
 import 'package:jonnverse/ui/custom_widgets/settings_tile.dart';
+import 'package:jonnverse/ui/screens/login_view.dart';
 
 class SettingsView extends ConsumerStatefulWidget {
   const SettingsView({super.key});
@@ -17,10 +23,13 @@ class SettingsView extends ConsumerStatefulWidget {
 }
 
 class _SettingsViewState extends ConsumerState<SettingsView> {
-    final List<String> _themeMessage = [AppStrings.systemTheme, AppStrings.lightTheme, AppStrings.darkTheme];
+  final DialogService _dialogService = locator<DialogService>();
+  final NavigationService _navigationService = locator<NavigationService>();
+  final List<String> _themeMessage = [AppStrings.systemTheme, AppStrings.lightTheme, AppStrings.darkTheme];
   @override
-  Widget build(BuildContext settingsContext) {
+  Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
+    final auth = ref.watch(authProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text(AppStrings.settings, style: Theme.of(context).textTheme.displayLarge,),
@@ -69,7 +78,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
               ),
               SizedBox(height: 15,),
               Text(
-                AppStrings.randomName,
+                auth.user!.name!,
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -77,7 +86,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
               SettingsTile(
                 title: AppStrings.mail,
                 icon: Icons.email,
-                subTitle: AppStrings.randomMail,
+                subTitle: auth.user!.email,
                 color: kCBlueShadeColor,
               ),
               SettingsTile(
@@ -86,7 +95,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                 icon: Icons.color_lens,
                 iconColor: kCAccentColor,
                 onTap: (){
-                  showModalBottomSheet(context: settingsContext, builder: (settingsContext){
+                  showModalBottomSheet(context: context, builder: (context){
                     return Consumer(
                       builder: (context, ref, child) {
                         final theme = ref.watch(themeProvider);
@@ -160,7 +169,28 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
               ),
               SettingsTile(
                 title: AppStrings.logout,
-                onTap: (){},
+                onTap: (){
+                  _dialogService.showAlertDialog(context,
+                      title: AppStrings.logout,
+                      subtitle: AppStrings.wannaLogout,
+                    actions: [
+                      TextButton(onPressed: _navigationService.pop, child: Text(AppStrings.cancel,style: Theme.of(context).textTheme.bodySmall),),
+                      TextButton(onPressed: () async{
+                        final message = await ref.read(authProvider.notifier).logout();
+                        if(message != null){
+                          if (!context.mounted) return;
+                          _navigationService.pop();
+                          _dialogService.showAlertDialog(context, title: AppStrings.authError,subtitle: message);
+                        }
+                       else{
+                          ref.read(navProvider.notifier).updateIndex(0);
+                         _navigationService.pushNamedAndRemoveUntil(LoginView.id);
+                       }
+                      },
+                        child: auth.loggingOut ? CircularProgressIndicator(color: kCAccentColor,) : Text(AppStrings.logout,style: Theme.of(context).textTheme.bodySmall!.copyWith(color: kCRedColor),),),
+                    ]
+                  );
+                },
                 icon: Icons.logout,
                 iconColor: kCRedColor,
               ),

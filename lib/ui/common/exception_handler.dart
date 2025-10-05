@@ -104,4 +104,86 @@ class ExceptionHandler {
     log(message);
     return message;
   }
+
+
+  ///Firebase Related Exceptions
+  //FirebaseAuthException
+ static String getSignInErrorMessage(String errorCode) {
+    switch (errorCode) {
+      case 'invalid-credential':
+      case 'INVALID_LOGIN_CREDENTIALS':
+      case 'wrong-password':
+      case 'user-not-found':
+      // Due to email enumeration protection, these are now grouped together
+        return 'Invalid email or password. Please check your credentials and try again.';
+      case 'invalid-email':
+        return 'Please enter a valid email address.';
+      case 'user-disabled':
+        return 'This account has been disabled. Please contact support.';
+      case 'too-many-requests':
+        return 'Too many failed attempts. Please try again later or reset your password.';
+      case 'network-request-failed':
+        return 'Network error. Please check your internet connection and try again.';
+      case 'operation-not-allowed':
+        return 'Email/password sign-in is not enabled. Please contact support.';
+      default:
+        return 'Sign in failed. Please check your credentials and try again.';
+    }
+  }
+
+  //FirebaseAuthException
+  static String getSignUpErrorMessage(String errorCode) {
+    switch (errorCode) {
+      case 'email-already-in-use':
+        return 'An account with this email already exists. Please try signing in instead.';
+      case 'invalid-email':
+        return 'Please enter a valid email address.';
+      case 'weak-password':
+        return 'Password is too weak. Please use at least 6 characters with a mix of letters and numbers.';
+      case 'operation-not-allowed':
+        return 'Email/password accounts are not enabled. Please contact support.';
+      case 'too-many-requests':
+        return 'Too many requests. Please try again later.';
+      case 'network-request-failed':
+        return 'Network error. Please check your internet connection and try again.';
+      default:
+        return 'Account creation failed. Please try again.';
+    }
+  }
+
+  //FirebaseException
+  static String getGeneralAuthErrorMessage(String errorCode) {
+    switch (errorCode) {
+      case 'account-exists-with-different-credential':
+        return 'An account already exists with this email using a different sign-in method. Please try signing in with your original method.';
+      case 'invalid-credential':
+        return 'Authentication failed. Please try again.';
+      case 'operation-not-allowed':
+        return 'This sign-in method is not enabled. Please contact support.';
+      case 'user-disabled':
+        return 'This account has been disabled. Please contact support.';
+      case 'user-not-found':
+        return 'No account found. Please check your credentials or sign up.';
+      case 'wrong-password':
+        return 'Incorrect password. Please try again.';
+      case 'invalid-verification-code':
+        return 'Invalid verification code. Please try again.';
+      case 'invalid-verification-id':
+        return 'Invalid verification ID. Please restart the process.';
+      case 'code-expired':
+        return 'Verification code has expired. Please request a new one.';
+      case 'too-many-requests':
+        return 'Too many requests. Please try again later.';
+      case 'network-request-failed':
+        return 'Network error. Please check your internet connection.';
+      case 'app-not-authorized':
+        return 'App not authorized. Please contact support.';
+      case 'invalid-api-key':
+        return 'Configuration error. Please contact support.';
+      case 'requires-recent-login':
+        return 'Please sign in again to continue.';
+      default:
+        return 'Authentication failed. Please try again.';
+    }
+  }
 }

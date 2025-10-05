@@ -21,84 +21,42 @@ class HiveService{
   static Box<bool> loggedInBox = Hive.box(AppStrings.loggedInKey);
 
   //For Theme
-    ThemeMode? getThemeMode() {
-    try {
-      return themeBox.get(AppStrings.themeKey, defaultValue: ThemeMode.system);
-    } catch (e) {
-      throw Exception('${AppStrings.hiveServiceLog}getThemeMode failed: $e');
-    }
-  }
+    ThemeMode? getThemeMode() => themeBox.get(AppStrings.themeKey, defaultValue: ThemeMode.system);
 
   Future<void> updateThemeMode({required ThemeMode theme}) async {
-      try{
-        await themeBox.put(AppStrings.themeKey, theme);
-        log('${AppStrings.hiveServiceLog}theme mode updated to $theme');
-      }catch(e){
-        throw Exception('${AppStrings.hiveServiceLog}theme mode update failed: $e');
-      }
+      await themeBox.put(AppStrings.themeKey, theme);
+      log('${AppStrings.hiveServiceLog}theme mode updated to $theme');
   }
 
   Future<void> clearThemeSettingsStorage() async {
-      try{
-        await themeBox.clear();
-        log('${AppStrings.hiveServiceLog}Theme box has been cleared');
-      }catch(e){
-        throw Exception('${AppStrings.hiveServiceLog}theme box clearing failed: $e');
-      }
+      await themeBox.clear();
+      log('${AppStrings.hiveServiceLog}Theme box has been cleared');
   }
 
   //For User
-  User? getUser() {
-    try {
-      return userBox.get(AppStrings.userKey);
-    } catch (e) {
-      throw Exception('${AppStrings.hiveServiceLog}getUser failed: $e');
-    }
-  }
+  User? getUser() => userBox.get(AppStrings.userKey);
 
   Future<void> updateUser({required User? user}) async {
-    try{
       await userBox.put(AppStrings.userKey, user);
       log('${AppStrings.hiveServiceLog}user updated to ${user.toString()}');
-    }catch(e){
-      throw Exception('${AppStrings.hiveServiceLog}user update failed: $e');
-    }
   }
 
   Future<void> clearUserStorage() async {
-    try{
       await userBox.clear();
       log('${AppStrings.hiveServiceLog}user box has been cleared');
-    }catch(e){
-      throw Exception('${AppStrings.hiveServiceLog}user box clearing failed: $e');
-    }
   }
 
   //For LoggedIn
-  bool? getLoggedIn() {
-    try {
-      return loggedInBox.get(AppStrings.loggedInKey, defaultValue: false);
-    } catch (e) {
-      throw Exception('${AppStrings.hiveServiceLog}getLoggedIn failed: $e');
-    }
-  }
+  bool? getLoggedIn() => loggedInBox.get(AppStrings.loggedInKey, defaultValue: false);
 
   Future<void> updateLoggedIn({required bool loggedIn}) async {
-    try{
       await loggedInBox.put(AppStrings.loggedInKey, loggedIn);
       log('${AppStrings.hiveServiceLog}loggedIn updated to $loggedIn');
-    }catch(e){
-      throw Exception('${AppStrings.hiveServiceLog}loggedIn update failed: $e');
-    }
   }
 
   Future<void> clearLoggedInStorage() async {
-    try{
       await loggedInBox.clear();
       log('${AppStrings.hiveServiceLog}user box has been cleared');
-    }catch(e){
-      throw Exception('${AppStrings.hiveServiceLog}loggedIn box clearing failed: $e');
-    }
   }
 
   // void updateMessageList({required List<Message> messages, required Box<Message> box}) {
@@ -116,13 +74,8 @@ class HiveService{
   // }
 
   static Future<void> closeHive() async {
-      try{
         await Hive.close();
         log('${AppStrings.hiveServiceLog}All opened local storage boxes have been closed');
-      } catch(e){
-        throw Exception('${AppStrings.hiveServiceLog}Failed to close hive: $e');
-      }
-
   }
 
 }

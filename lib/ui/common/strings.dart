@@ -3,6 +3,8 @@ class AppStrings{
   static const String jonnverse = 'Jonnverse';
   static const String poppins = 'Poppins';
 
+  static const String cancel = 'Cancel';
+  static const String ok = 'Ok';
   static const String retry = 'Retry';
   static const String noInternet = 'No Internet Connection';
 
@@ -61,6 +63,7 @@ class AppStrings{
   static const String storageSubTitle = 'Locally & on Cloud';
   static const String closeApp = 'Close App';
   static const String logout = 'Logout';
+  static const String wannaLogout = 'Are you sure you want to logout?';
   static const String blocked = 'Blocked Users';
   static const String blockedSubTitle = 'Manage blocked users';
   static const String randomName = 'Jonny Hevy';

@@ -147,11 +147,11 @@ class _LoginViewState extends ConsumerState<RegisterView> {
                              _dialogService.showAlertDialog(context, title: AppStrings.authError,subtitle: message);
                            }
                            else{
+                             _navigationService.pushNamed(NavView.id);
                              _emailController.clear();
                              _passwordController.clear();
                              _confirmPasswordController.clear();
                              _nameController.clear();
-                             _navigationService.pushNamed(NavView.id);
                            }
                         },
                         text: AppStrings.registerWithGoogle,

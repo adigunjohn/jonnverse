@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jonnverse/app/config/routes.dart';
 import 'package:jonnverse/providers/nav_notifier.dart';
@@ -14,16 +15,16 @@ import 'package:jonnverse/ui/screens/users_view.dart';
 class NavView extends ConsumerWidget {
   NavView({super.key});
   static const String id = Routes.navView;
-
   final PageController _pageController = PageController();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nav = ref.watch(navProvider);
     return Scaffold(
       body: PopScope(
-        canPop: false,
+        canPop: true,
         onPopInvokedWithResult: (x,y){
           ref.read(navProvider.notifier).updateIndex(0);
+          SystemNavigator.pop();
         },
         child: PageView(
           controller: _pageController,

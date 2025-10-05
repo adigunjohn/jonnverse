@@ -4,7 +4,6 @@ import 'package:jonnverse/ui/common/strings.dart';
 
 class ConnectivityService{
   Future<bool> hasInternetConnection() async {
-    try{
       var connectivityResult = await Connectivity().checkConnectivity();
       log('${AppStrings.connectivityServiceLog}$connectivityResult');
       if (connectivityResult.first == ConnectivityResult.none) {
@@ -15,9 +14,6 @@ class ConnectivityService{
         log('${AppStrings.connectivityServiceLog}Internet Connection available');
         return true;
       }
-    } catch(e){
-      throw Exception('${AppStrings.connectivityServiceLog}$e');
-    }
   }
 
 }

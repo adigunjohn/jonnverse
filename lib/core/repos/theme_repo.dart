@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/core/services/hive_service.dart';
@@ -11,6 +12,7 @@ class ThemeRepo {
       final themeMode = _hiveService.getThemeMode();
       return themeMode;
     }catch(e){
+      log('${AppStrings.themeRepoLog}Failed to get themeMode: $e');
       throw Exception('${AppStrings.themeRepoLog}Failed to get themeMode: $e');
     }
   }
@@ -19,14 +21,16 @@ class ThemeRepo {
     try{
       await _hiveService.updateThemeMode(theme: theme);
     }catch(e){
+      log('${AppStrings.themeRepoLog}Failed to update themeMode: $e');
       throw Exception('${AppStrings.themeRepoLog}Failed to update themeMode: $e');
     }
   }
 
-  Future deleteThemeMode() async{
+  Future<void> deleteThemeMode() async{
     try{
       await _hiveService.clearThemeSettingsStorage();
     }catch(e){
+      log('${AppStrings.themeRepoLog}Failed to delete themeMode: $e');
       throw Exception('${AppStrings.themeRepoLog}Failed to delete themeMode: $e');
     }
   }
