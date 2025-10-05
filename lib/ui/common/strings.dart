@@ -91,6 +91,7 @@ class AppStrings{
   static const String themeRepoLog = 'Theme Repo => ';
   static const String authRepoLog = 'Auth Repo => ';
   static const String userRepoLog = 'User Repo => ';
+  static const String chatRepoLog = 'Chat Repo => ';
 
   //Hive
   static const String themeKey = 'ThemeKey';

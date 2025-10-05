@@ -1,30 +1,17 @@
-import 'package:hive_flutter/hive_flutter.dart';
-part 'message.g.dart';
 
-@HiveType(typeId: 1)
-class Message extends HiveObject{
-  @HiveField(0)
+class JMessage {
   final String? message;
-  @HiveField(1)
   final String senderId;
-  @HiveField(2)
   final String senderName;
-  @HiveField(3)
   final String senderMail;
-  @HiveField(4)
   final String receiverId;
-  @HiveField(5)
   final String receiverName;
-  @HiveField(6)
   final String receiverMail;
-  @HiveField(7)
-  final String time;
-  @HiveField(8)
+  final DateTime time;
   final String? file;
-  @HiveField(9)
   final String? image;
 
-  Message({
+  JMessage({
     this.message,
     required this.senderId,
     required this.senderName,
@@ -51,18 +38,18 @@ class Message extends HiveObject{
     };
   }
 
-  factory Message.fromJson(Map<String, dynamic> json){
-    return Message(
-      message: json['message'],
-      senderId: json['senderId'],
-      senderName: json['senderName'],
-      senderMail: json['senderMail'],
-      receiverId: json['receiverId'],
-      receiverName: json['receiverName'],
-      receiverMail: json['receiverMail'],
-      time: json['time'],
-      file: json['file'],
-      image: json['image']
+  factory JMessage.fromJson(Map<String, dynamic> json){
+    return JMessage(
+        message: json['message'],
+        senderId: json['senderId'],
+        senderName: json['senderName'],
+        senderMail: json['senderMail'],
+        receiverId: json['receiverId'],
+        receiverName: json['receiverName'],
+        receiverMail: json['receiverMail'],
+        time: json['time'],
+        file: json['file'],
+        image: json['image']
     );
   }
 

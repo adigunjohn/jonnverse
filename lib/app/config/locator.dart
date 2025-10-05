@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:jonnverse/core/repos/auth_repo.dart';
+import 'package:jonnverse/core/repos/chat_repo.dart';
 import 'package:jonnverse/core/repos/connectivity_repo.dart';
 import 'package:jonnverse/core/repos/theme_repo.dart';
 import 'package:jonnverse/core/repos/user_repo.dart';
@@ -25,5 +26,6 @@ void setupLocator(){
   locator.registerLazySingleton(() => ThemeRepo());
   locator.registerLazySingleton(() => AuthRepo());
   locator.registerLazySingleton(() => UserRepo());
+  locator.registerLazySingleton(() => ChatRepo());
   locator.registerLazySingleton(() => ConnectivityRepo());
 }

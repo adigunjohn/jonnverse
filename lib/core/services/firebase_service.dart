@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:jonnverse/core/models/jmessages.dart';
 import 'package:jonnverse/core/models/user.dart' as jonnverse;
 import 'package:jonnverse/firebase_options.dart';
 import 'package:jonnverse/ui/common/strings.dart';
@@ -16,7 +17,9 @@ class FirebaseService {
   }
 
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final googleSignIn = GoogleSignIn.instance;
   final CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
+  final CollectionReference chatsCollection = FirebaseFirestore.instance.collection('chats');
 
   User? getUser() {
     final user = auth.currentUser;
@@ -45,7 +48,6 @@ class FirebaseService {
     return userCredential;
   }
 
-   final googleSignIn = GoogleSignIn.instance;
   Future<UserCredential> signUpOrInWithGoogle() async {
     // await GoogleSignIn.instance.initialize();
     await googleSignIn.initialize();
@@ -86,5 +88,25 @@ class FirebaseService {
     });
     return users;
   }
+
+  Future<void> createChat(String chatId, JMessage message)async{
+    await chatsCollection.doc(chatId).collection('messages').add(message.toJson());
+  }
+
+  Stream<List<JMessage>> getChatMessages(String chatId) {
+    final allMessages = chatsCollection.doc(chatId).collection('messages').orderBy('time', descending: true).snapshots();
+    final messages = allMessages.map((e){
+      return e.docs.map((e) => JMessage.fromJson(e.data())).toList();
+    });
+    return messages;
+  }
+
+  // Stream getAllChats() {
+  //   final allUsers = chatsCollection.snapshots();
+  //   final users = allUsers.map((e){
+  //     return e.docs.map((e) => jonnverse.User.fromJson(e.data() as Map<String, dynamic>)).where((e) => e.email != getUser()!.email).toList();
+  //   });
+  //   return users;
+  // }
 
 }
