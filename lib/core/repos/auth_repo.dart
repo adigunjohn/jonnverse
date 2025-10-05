@@ -15,7 +15,7 @@ class AuthRepo{
       log('${AppStrings.authRepoLog}account created, proceeding to save user details');
       final user = userCredential.user;
       if(user == null) return null;
-        final jonnverse.User value = jonnverse.User(uid: user.uid, name: fullName, email: user.email!);
+        final jonnverse.User value = jonnverse.User(uid: user.uid, name: fullName, email: user.email!,profilePic: '');
         await _firebaseService.saveUser(user, value);
         await _hiveService.updateUser(user: value);
         await _hiveService.updateLoggedIn(loggedIn: true);
@@ -33,7 +33,7 @@ class AuthRepo{
       final user = userCredential.user;
       if(user == null) return null;
         final userDetails = await _firebaseService.getUserDetails(user.uid);
-        final jonnverse.User value = jonnverse.User(uid: userDetails.uid, name: userDetails.name, email: userDetails.name);
+        final jonnverse.User value = jonnverse.User(uid: userDetails.uid, name: userDetails.name, email: userDetails.email,profilePic: userDetails.profilePic);
         await _hiveService.updateUser(user: value);
         await _hiveService.updateLoggedIn(loggedIn: true);
         return value;
@@ -48,7 +48,7 @@ class AuthRepo{
       final userCredential = await _firebaseService.signUpOrInWithGoogle();
       final user = userCredential.user;
       if(user == null) return null;
-        final jonnverse.User value = jonnverse.User(uid: user.uid, name: user.displayName ?? 'No Full Name', email: user.email!);
+        final jonnverse.User value = jonnverse.User(uid: user.uid, name: user.displayName ?? 'No Full Name', email: user.email!,profilePic: '');
         await _firebaseService.saveUser(user, value);
         await _hiveService.updateUser(user: value);
         await _hiveService.updateLoggedIn(loggedIn: true);
@@ -64,7 +64,7 @@ class AuthRepo{
       final user = userCredential.user;
       if(user == null) return null;
         final userDetails = await _firebaseService.getUserDetails(user.uid);
-        final jonnverse.User value = jonnverse.User(uid: userDetails.uid, name: userDetails.name, email: userDetails.name);
+        final jonnverse.User value = jonnverse.User(uid: userDetails.uid, name: userDetails.name, email: userDetails.email, profilePic: userDetails.profilePic);
         await _hiveService.updateUser(user: value);
         await _hiveService.updateLoggedIn(loggedIn: true);
         return value;
@@ -73,5 +73,14 @@ class AuthRepo{
     }
   }
 
+  Future<void> logout() async{
+    try{
+      await _firebaseService.signOut();
+      await _hiveService.updateUser(user: null);
+      await _hiveService.updateLoggedIn(loggedIn: false);
+    }catch(e){
+      throw Exception('${AppStrings.authRepoLog}Unknown Error logging out: $e');
+    }
+}
 
 }

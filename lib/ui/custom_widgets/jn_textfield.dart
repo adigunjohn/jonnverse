@@ -25,6 +25,7 @@ class JnTextField extends StatelessWidget {
       validator: validator,
       autovalidateMode: autoValidateMode ?? AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
+        errorStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(color: kCRedColor),
         suffixIcon: suffix,
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         filled: true,

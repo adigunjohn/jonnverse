@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,21 +5,21 @@ import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/core/models/user.dart' as jonnverse;
 import 'package:jonnverse/core/repos/auth_repo.dart';
 import 'package:jonnverse/core/repos/connectivity_repo.dart';
-import 'package:jonnverse/core/services/dialog_service.dart';
-import 'package:jonnverse/core/services/navigation_service.dart';
-import 'package:jonnverse/ui/screens/nav_view.dart';
+import 'package:jonnverse/ui/common/strings.dart';
 
 class AuthState{
-  bool isLoginLoading;
-  bool isRegisterLoading;
-  jonnverse.User user;
-  AuthState({required this.user, this.isLoginLoading = false, this.isRegisterLoading = false,});
+  final bool isLoginLoading;
+  final bool isRegisterLoading;
+  final bool loggingOut;
+  final jonnverse.User? user;
+  AuthState({required this.user, this.isLoginLoading = false, this.isRegisterLoading = false, this.loggingOut = false});
 
-  AuthState copyWith({bool? isLoginLoading, bool? isRegisterLoading, jonnverse.User? user,}){
+  AuthState copyWith({bool? isLoginLoading, bool? isRegisterLoading, jonnverse.User? user,bool? loggingOut}){
     return AuthState(
       isLoginLoading: isLoginLoading ?? this.isLoginLoading,
       isRegisterLoading: isRegisterLoading ?? this.isRegisterLoading,
-      user: user ?? this.user
+      user: user ?? this.user,
+      loggingOut: loggingOut ?? this.loggingOut
     );
   }
 }
@@ -28,92 +27,110 @@ class AuthState{
 class AuthNotifier extends Notifier<AuthState>{
   final AuthRepo _authRepo = locator<AuthRepo>();
   final ConnectivityRepo _connectivityRepo = locator<ConnectivityRepo>();
-  final DialogService _dialogService = locator<DialogService>();
-  final NavigationService _navigationService = locator<NavigationService>();
   @override
-  AuthState build() => AuthState(user: jonnverse.User(uid: '', name: '', email: ''));
+  AuthState build() => AuthState(user: jonnverse.User(uid: '', name: '', email: '',profilePic: ''));
 
-  Future<void> login(BuildContext context,{required String email, required String password}) async{
-    if(await _connectivityRepo.hasInternet() == false)return;
+  Future<String?> login(BuildContext context,{required String email, required String password}) async{
+    if(await _connectivityRepo.hasInternet() == false)return AppStrings.noInternet;
     state = state.copyWith(isLoginLoading: true);
     try{
       final user = await _authRepo.signIn(email: email, password: password);
       state = state.copyWith(isLoginLoading: false);
       if(user != null){
         state = state.copyWith(user: user);
-        _navigationService.pushNamed(NavView.id);
-      }else{ log('User is null');}
+        return null;
+      }else{ return 'User is null';}
     }
     on FirebaseAuthException catch(e){
       state = state.copyWith(isLoginLoading: false);
-      _dialogService.showAlertDialog(context, title: 'Authentication Error',subtitle: e.code);
+      return e.code;
     }
     catch(e){
       state = state.copyWith(isLoginLoading: false);
-      _dialogService.showAlertDialog(context, title: 'Authentication Error',subtitle: '$e');
+      return e.toString();
     }
   }
 
-  Future<void> loginWithGoogle(BuildContext context) async{
-    if(await _connectivityRepo.hasInternet() == false)return;
+  Future<String?> loginWithGoogle(BuildContext context) async{
+    if(await _connectivityRepo.hasInternet() == false)return AppStrings.noInternet;
     state = state.copyWith(isLoginLoading: true);
     try{
       final user = await _authRepo.signInWithGoogleAccount();
       state = state.copyWith(isLoginLoading: false);
       if(user != null){
         state = state.copyWith(user: user);
-        _navigationService.pushNamed(NavView.id);
-      }else{ log('User is null');}
+        return null;
+      }else{ return 'User is null';}
     }
     on FirebaseAuthException catch(e){
       state = state.copyWith(isLoginLoading: false);
-      _dialogService.showAlertDialog(context, title: 'Authentication Error',subtitle: e.code);
+      return e.code;
     }
     catch(e){
       state = state.copyWith(isLoginLoading: false);
-      _dialogService.showAlertDialog(context, title: 'Authentication Error',subtitle: '$e');
+      return e.toString();
     }
   }
 
-  Future<void> register(BuildContext context,{required String email, required String password, required String fullName}) async{
-    if(await _connectivityRepo.hasInternet() == false)return;
+  Future<String?> register(BuildContext context,{required String email, required String password, required String fullName}) async{
+    if(await _connectivityRepo.hasInternet() == false)return AppStrings.noInternet;
     state = state.copyWith(isRegisterLoading: true);
     try{
       final user = await _authRepo.signUp(email: email, password: password, fullName: fullName);
       state = state.copyWith(isRegisterLoading: false);
       if(user != null){
         state = state.copyWith(user: user);
-        _navigationService.pushNamed(NavView.id);
-      }else{ log('User is null');}
+        return null;
+      }else{
+        return 'User is null';
+      }
     }
     on FirebaseAuthException catch(e){
       state = state.copyWith(isRegisterLoading: false);
-      _dialogService.showAlertDialog(context, title: 'Authentication Error',subtitle: e.code);
+      return e.code;
     }
     catch(e){
       state = state.copyWith(isRegisterLoading: false);
-      _dialogService.showAlertDialog(context, title: 'Authentication Error',subtitle: '$e');
+      return e.toString();
     }
   }
 
-  Future<void> registerWithGoogle(BuildContext context) async{
-    if(await _connectivityRepo.hasInternet() == false)return;
+  Future<String?> registerWithGoogle(BuildContext context) async{
+    if(await _connectivityRepo.hasInternet() == false)return AppStrings.noInternet;
     state = state.copyWith(isRegisterLoading: true);
     try{
       final user = await _authRepo.signUpWithGoogleAccount();
       state = state.copyWith(isRegisterLoading: false);
       if(user != null){
         state = state.copyWith(user: user);
-        _navigationService.pushNamed(NavView.id);
-      }else{ log('User is null');}
+        return null;
+      }else{ return 'User is null';}
     }
     on FirebaseAuthException catch(e){
       state = state.copyWith(isRegisterLoading: false);
-      _dialogService.showAlertDialog(context, title: 'Authentication Error',subtitle: e.code);
+      return e.code;
     }
     catch(e){
       state = state.copyWith(isRegisterLoading: false);
-      _dialogService.showAlertDialog(context, title: 'Authentication Error',subtitle: '$e');
+      return e.toString();
+    }
+  }
+
+  Future<String?> logout() async{
+    if(await _connectivityRepo.hasInternet() == false)return AppStrings.noInternet;
+    state = state.copyWith(loggingOut: true);
+    try{
+       await _authRepo.logout();
+      state = state.copyWith(loggingOut: false, user: null);
+      return null;
+    }
+    on FirebaseAuthException catch(e){
+      state = state.copyWith(loggingOut: false);
+      return e.code;
+    }
+    catch(e){
+      state = state.copyWith(loggingOut: false);
+      return e.toString();
     }
   }
 

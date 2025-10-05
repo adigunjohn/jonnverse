@@ -6,14 +6,17 @@ class User extends HiveObject{
   @HiveField(0)
   final String uid;
   @HiveField(1)
-  final String name;
+  final String? name;
   @HiveField(2)
   final String email;
+  @HiveField(3)
+  final String? profilePic;
 
   User({
     required this.uid,
     required this.name,
     required this.email,
+    required this.profilePic
   });
 
   Map<String, dynamic> toJson(){
@@ -21,6 +24,7 @@ class User extends HiveObject{
       'uid': uid,
       'name': name,
       'email': email,
+      'profilePic': profilePic
     };
   }
 
@@ -29,11 +33,12 @@ class User extends HiveObject{
         uid: json['uid'],
         name: json['name'],
         email: json['email'],
+      profilePic: json['profilePic'],
     );
   }
 
 @override
   String toString() {
-    return 'User{uid: $uid, name: $name, email: $email}';
+    return 'User{uid: $uid, name: $name, email: $email, profilePic: $profilePic}';
   }
 }

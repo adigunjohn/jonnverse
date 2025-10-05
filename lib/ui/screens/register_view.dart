@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/app/config/routes.dart';
+import 'package:jonnverse/core/services/dialog_service.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/providers/auth_notifier.dart';
+import 'package:jonnverse/providers/visibility_notifier.dart';
 import 'package:jonnverse/ui/common/input_validator.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
@@ -14,8 +15,6 @@ import 'package:jonnverse/ui/custom_widgets/jn_button.dart';
 import 'package:jonnverse/ui/custom_widgets/jn_textfield.dart';
 import 'package:jonnverse/ui/custom_widgets/progress_indicator.dart';
 import 'package:jonnverse/ui/screens/nav_view.dart';
-
-final visibilityProvider = StateProvider<bool>((ref) => true);
 
 class RegisterView extends ConsumerStatefulWidget {
   const RegisterView({super.key});
@@ -27,6 +26,7 @@ class RegisterView extends ConsumerStatefulWidget {
 
 class _LoginViewState extends ConsumerState<RegisterView> {
   final NavigationService _navigationService = locator<NavigationService>();
+  final DialogService _dialogService = locator<DialogService>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -94,14 +94,12 @@ class _LoginViewState extends ConsumerState<RegisterView> {
                         controller: _passwordController,
                         hintText: AppStrings.enterPassword,
                         keyboardType: TextInputType.text,
-                        obscureText: visible,
+                        obscureText: visible.isRegisterPasswordVisible,
                         autoValidateMode: AutovalidateMode.onUserInteraction,
                         validator: InputValidator.validatePassword,
                         suffix: GestureDetector(
-                          onTap: (){
-                            ref.read(visibilityProvider.notifier).state = !visible;
-                          },
-                            child: visible ?
+                          onTap: ref.read(visibilityProvider.notifier).updateRegisterPasswordVisibility,
+                            child: visible.isRegisterPasswordVisible ?
                             Icon(Icons.visibility_off_rounded, color: kCBlueShadeColor, size: settingsIconSize,) :
                             Icon(Icons.visibility_rounded, color: kCBlueShadeColor, size: settingsIconSize,),),
                       ),
@@ -110,31 +108,51 @@ class _LoginViewState extends ConsumerState<RegisterView> {
                         controller: _confirmPasswordController,
                         hintText: AppStrings.confirmPassword,
                         keyboardType: TextInputType.text,
-                        obscureText: visible,
+                        obscureText: visible.isRegisterPasswordVisible,
                         autoValidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value)=>InputValidator.validateConfirmPassword(value, _passwordController.text),
                         suffix: GestureDetector(
-                          onTap: (){
-                            ref.read(visibilityProvider.notifier).state = !visible;
-                          },
-                          child: visible ?
+                          onTap: ref.read(visibilityProvider.notifier).updateRegisterPasswordVisibility,
+                          child: visible.isRegisterPasswordVisible ?
                           Icon(Icons.visibility_off_rounded, color: kCBlueShadeColor, size: settingsIconSize,) :
                           Icon(Icons.visibility_rounded, color: kCBlueShadeColor, size: settingsIconSize,),),
                       ),
                       SizedBox(height: 20),
-                      JnButton(onTap: (){
+                      JnButton(onTap: () async{
                         if(_formKey.currentState!.validate()){
-                           ref.read(authProvider.notifier).register(
+                           final message = await ref.read(authProvider.notifier).register(
                              context,
                              email: _emailController.text,
                              password: _passwordController.text,
                              fullName: _nameController.text,);
+                           if(message != null){
+                             if (!context.mounted) return;
+                             _dialogService.showAlertDialog(context, title: AppStrings.authError,subtitle: message);
+                           }
+                           else{
+                             _emailController.clear();
+                             _passwordController.clear();
+                             _confirmPasswordController.clear();
+                             _nameController.clear();
+                             _navigationService.pushNamed(NavView.id);
+                           }
                         }
                       }, text: AppStrings.register),
                       SizedBox(height: 10),
                       JnButton(
-                        onTap: (){
-                            ref.read(authProvider.notifier).registerWithGoogle(context);
+                        onTap: () async{
+                           final message = await ref.read(authProvider.notifier).registerWithGoogle(context);
+                           if(message != null){
+                             if (!context.mounted) return;
+                             _dialogService.showAlertDialog(context, title: AppStrings.authError,subtitle: message);
+                           }
+                           else{
+                             _emailController.clear();
+                             _passwordController.clear();
+                             _confirmPasswordController.clear();
+                             _nameController.clear();
+                             _navigationService.pushNamed(NavView.id);
+                           }
                         },
                         text: AppStrings.registerWithGoogle,
                         color: kCWhiteColor,

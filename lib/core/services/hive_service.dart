@@ -11,13 +11,13 @@ class HiveService{
     Hive.registerAdapter(ThemeModeAdapter());
     Hive.registerAdapter(UserAdapter());
     await Hive.openBox<ThemeMode>(AppStrings.themeKey);
-    await Hive.openBox<User>(AppStrings.userKey);
+    await Hive.openBox<User?>(AppStrings.userKey);
     await Hive.openBox<bool>(AppStrings.loggedInKey);
     log('${AppStrings.hiveServiceLog}hive successfully initialized');
   }
 
   static Box<ThemeMode> themeBox = Hive.box(AppStrings.themeKey);
-  static Box<User> userBox = Hive.box(AppStrings.userKey);
+  static Box<User?> userBox = Hive.box(AppStrings.userKey);
   static Box<bool> loggedInBox = Hive.box(AppStrings.loggedInKey);
 
   //For Theme
@@ -56,7 +56,7 @@ class HiveService{
     }
   }
 
-  Future<void> updateUser({required User user}) async {
+  Future<void> updateUser({required User? user}) async {
     try{
       await userBox.put(AppStrings.userKey, user);
       log('${AppStrings.hiveServiceLog}user updated to ${user.toString()}');

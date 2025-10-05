@@ -12,6 +12,7 @@ class AppStrings{
 
   //LoginView & RegisterView & ResetPasswordView
   static const String welcomeBack = 'Welcome back to Jonnverse';
+  static const String authError = 'Authentication Error';
   static const String welcome = 'Welcome to Jonnverse';
   static const String enterEmail = 'Enter your email';
   static const String enterFullName = 'Enter your full name';
