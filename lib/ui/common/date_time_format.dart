@@ -8,11 +8,12 @@ String formatTimeStamp(String timestamp) {
 }
 
 
-//String formatTime() {
-//   final dateTime = DateTime.now().toLocal();
-//   final timeFormat = DateFormat("h:mm a");
-//   return timeFormat.format(dateTime);
-// }
+String formatTime(String time) {
+  // final dateTime = DateTime.now().toLocal();
+  final dateTime = DateTime.parse(time).toLocal();
+  final timeFormat = DateFormat("h:mm a");
+  return timeFormat.format(dateTime);
+}
 
 // String formatDateTime(String input) {
 //   final dateTime = DateTime.parse(input).toLocal(); // Convert to local time

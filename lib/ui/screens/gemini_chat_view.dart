@@ -92,6 +92,7 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
                           message: 'Hey, I am Jonny',
                           file: null,
                           // image: AppStrings.dp,
+                          time: '',
                           onTap: (){
                             _navigationService.push(ShowImageView());
                           },);

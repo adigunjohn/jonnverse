@@ -27,9 +27,9 @@ class UserRepo{
     }
   }
 
-  Stream<List<User>> getAllUsers(){
+  Stream<List<User>> getAllUsers(String? currentUserEmail){
     try{
-      final users = _firebaseService.getAllUsers();
+      final users = _firebaseService.getAllUsers(currentUserEmail ?? getUser()!.email);
       return users;
     }catch(e){
       log('${AppStrings.userRepoLog}failed to fetch all the available users: $e');

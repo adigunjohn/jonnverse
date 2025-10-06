@@ -47,7 +47,8 @@ class JMessage {
         receiverId: json['receiverId'],
         receiverName: json['receiverName'],
         receiverMail: json['receiverMail'],
-        time: json['time'],
+        // time: json['time'],
+        time: DateTime.parse(json['time'].toDate().toString()),
         file: json['file'],
         image: json['image']
     );

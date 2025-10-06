@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/app/config/routes.dart';
+import 'package:jonnverse/core/repos/user_repo.dart';
+import 'package:jonnverse/core/services/dialog_service.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/providers/all_users_notifier.dart';
+import 'package:jonnverse/providers/auth_notifier.dart';
+import 'package:jonnverse/providers/chats_notifier.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
@@ -18,6 +22,7 @@ class UsersView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allUsers = ref.watch(allUsersStreamProvider);
+    final sender = ref.watch(authProvider);
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -43,6 +48,83 @@ class UsersView extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.only(right: 15, left: 15, top: 10),
           child:
+          // StreamBuilder(stream: UserRepo().getAllUsers(),
+          //         builder: (context, snapshot){
+          //           if(snapshot.connectionState == ConnectionState.waiting){
+          //             return Center(child: CircularProgressIndicator(color: kCAccentColor,),);
+          //           }
+          //           if(snapshot.hasData){
+          //             final allUsers = snapshot.data!;
+          //             if (allUsers.isEmpty) {
+          //               return Center(
+          //                 child: Text(
+          //                   'No messages yet',
+          //                   style: Theme.of(context).textTheme.bodySmall,
+          //                   maxLines: 2,
+          //                   textAlign: TextAlign.center,
+          //                   overflow: TextOverflow.ellipsis,
+          //                 ),
+          //               );
+          //             }
+          //             return Column(
+          //               children: [
+          //                 Text(
+          //                   '${AppStrings.availableUsers} (${allUsers.length})',
+          //                   style: Theme.of(context).textTheme.bodyMedium,
+          //                 ),
+          //                 SizedBox(height: 10),
+          //                 Expanded(
+          //                   child:
+          //                   allUsers.isEmpty
+          //                       ? Center(
+          //                     child: Text(
+          //                       AppStrings.emptyUsers,
+          //                       style: Theme.of(context).textTheme.bodySmall,
+          //                       maxLines: 2,
+          //                       textAlign: TextAlign.center,
+          //                       overflow: TextOverflow.ellipsis,
+          //                     ),
+          //                   )
+          //                       : ListView.builder(
+          //                     itemCount: allUsers.length,
+          //                     itemBuilder: (_, index) {
+          //                       final user = allUsers[index];
+          //                       return UsersTile(
+          //                         userName: user.name!,
+          //                         userMail: user.email,
+          //                         onTap: () {
+          //                           _navigationService.push(ChatView(
+          //                             userId: sender.user?.uid,
+          //                             receiverName: user.name,
+          //                             receiverMail: user.email,
+          //                             receiverId: user.uid,
+          //                             userMail: sender.user?.email,
+          //                             userName: sender.user?.name,
+          //                           ));
+          //                         },
+          //                       );
+          //                     },
+          //                   ),
+          //                 ),
+          //               ],
+          //             );
+          //           }
+          //           if(snapshot.hasError){
+          //             log('Error occurred while fetching all the available users',);
+          //             return Center(child: Text(
+          //               'Failed to fetch all the available users',
+          //               style: Theme.of(context).textTheme.bodyMedium,
+          //             ),);
+          //           }
+          //           log('Error occurred unknown',);
+          //           return Center(
+          //             child: Text(
+          //               'Unknown error',
+          //               style: Theme.of(context).textTheme.bodyMedium,
+          //             ),
+          //           );
+          //         }
+          //     ),
             allUsers.when(
                 data: (users){
                   return Column(
@@ -73,8 +155,13 @@ class UsersView extends ConsumerWidget {
                                     userMail: user.email,
                                     onTap: () {
                                       _navigationService.push(ChatView(
-                                        userName: user.name,
-                                        userMail: user.email,));
+                                        userId: sender.user?.uid,
+                                        receiverName: user.name,
+                                        receiverMail: user.email,
+                                        receiverId: user.uid,
+                                      userMail: sender.user?.email,
+                                      userName: sender.user?.name,
+                                      ));
                                     },
                                   );
                                 },

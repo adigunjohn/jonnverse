@@ -49,9 +49,7 @@ class FirebaseService {
   }
 
   Future<UserCredential> signUpOrInWithGoogle() async {
-    // await GoogleSignIn.instance.initialize();
     await googleSignIn.initialize();
-    //final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate();
     final GoogleSignInAccount googleUser = await googleSignIn.authenticate();
     final GoogleSignInAuthentication googleAuth = googleUser.authentication;
     final OAuthCredential credential = GoogleAuthProvider.credential(
@@ -62,7 +60,6 @@ class FirebaseService {
   }
 
   Future<void> signOut() async {
-    // await GoogleSignIn.instance.signOut();
     await googleSignIn.signOut();
     await auth.signOut();
   }
@@ -81,25 +78,36 @@ class FirebaseService {
     return userDetails;
   }
 
-  Stream<List<jonnverse.User>> getAllUsers() {
+  Stream<List<jonnverse.User>> getAllUsers(String userEmail) {
     final allUsers = usersCollection.snapshots();
     final users = allUsers.map((e){
-     return e.docs.map((e) => jonnverse.User.fromJson(e.data() as Map<String, dynamic>)).where((e) => e.email != getUser()!.email).toList();
+     return e.docs.map((e) => jonnverse.User.fromJson(e.data() as Map<String, dynamic>)).where((e) => e.email != userEmail).toList();
     });
     return users;
   }
 
-  Future<void> createChat(String chatId, JMessage message)async{
+  Future<void> sendMessage(String chatId, JMessage message)async{
     await chatsCollection.doc(chatId).collection('messages').add(message.toJson());
   }
 
+  Future<bool> collectionExists(String chatId) async {
+      final chatCollectionRef = await chatsCollection.doc(chatId).get();
+      final snapshot = chatCollectionRef.exists;
+      return snapshot;
+  }
+
   Stream<List<JMessage>> getChatMessages(String chatId) {
-    final allMessages = chatsCollection.doc(chatId).collection('messages').orderBy('time', descending: true).snapshots();
+    final allMessages = chatsCollection.doc(chatId).collection('messages').orderBy('time', descending: false).snapshots();
     final messages = allMessages.map((e){
-      return e.docs.map((e) => JMessage.fromJson(e.data())).toList();
+      return e.docs.map((e){
+        // log('${e.data()}');
+        return JMessage.fromJson(e.data());
+      }).toList();
     });
     return messages;
   }
+
+
 
   // Stream getAllChats() {
   //   final allUsers = chatsCollection.snapshots();

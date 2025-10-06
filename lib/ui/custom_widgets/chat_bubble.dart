@@ -3,11 +3,12 @@ import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
 
 class ChatBubble extends StatelessWidget {
-  const ChatBubble({super.key, required this.isUser, this.onTap, this.message, this.file, this.image});
+  const ChatBubble({super.key, required this.isUser, this.onTap, this.message, this.file, this.image,required this.time});
   final bool isUser;
   final String? message;
   final String? file;
   final String? image;
+  final String time;
   final void Function()? onTap;
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,7 @@ class ChatBubble extends StatelessWidget {
             ),
           ),
           SizedBox(height: 2),
-          Text('11:34 PM',
+          Text(time,
             style: Theme.of(context).textTheme.headlineSmall,
             overflow: TextOverflow.ellipsis,),
         ],
