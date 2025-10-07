@@ -47,8 +47,8 @@ class ChatField extends StatelessWidget {
                           child:
                           image != null
                               ? ClipRRect(borderRadius: BorderRadius.circular(10),
-                            // child: Image.file(File(image.toString()), fit: BoxFit.cover,),)
-                            child: Image.asset(image.toString(), fit: BoxFit.cover,),)
+                            child: Image.file(File(image.toString()), fit: BoxFit.cover,),)
+                            // child: Image.asset(image.toString(), fit: BoxFit.cover,),)
                               : Center(child: Text(file.toString(), maxLines: 3,
                               style: Theme.of(context,).textTheme.labelSmall!.copyWith(color: Theme.of(context,).textTheme.bodyMedium!.color, fontSize: 10),
                               overflow: TextOverflow.ellipsis,

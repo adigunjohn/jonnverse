@@ -53,6 +53,7 @@ class AppStrings{
   static const String typeMessage = 'Type a message';
   static const String errorGettingMessages = 'Failed to fetch chat messages';
   static const String startConversation = 'Start a conversation';
+  static const String pickImage = 'Pick Image';
 
 
   //SettingsView
@@ -86,16 +87,18 @@ class AppStrings{
   static const String authorization = 'Authorization';
   static const String contentType = 'Content-Type';
   static const String applicationJson = 'application/json';
+  static const String supabaseUrl = 'https://astohbhtixdptgjslpuq.supabase.co';
 
   //Services & Repos
-  static const String firebaseServiceLog = 'Firebase Service => ';
-  static const String hiveServiceLog = 'Hive Service => ';
-  static const String connectivityServiceLog = 'Connectivity Service => ';
-  static const String connectivityRepoLog = 'Connectivity Repo => ';
-  static const String themeRepoLog = 'Theme Repo => ';
-  static const String authRepoLog = 'Auth Repo => ';
-  static const String userRepoLog = 'User Repo => ';
-  static const String chatRepoLog = 'Chat Repo => ';
+  static const String firebaseServiceLog = '[Firebase Service]: ';
+  static const String supabaseServiceLog = '[Supabase Service]: ';
+  static const String hiveServiceLog = '[Hive Service]: ';
+  static const String connectivityServiceLog = '[Connectivity Service]: ';
+  static const String connectivityRepoLog = '[Connectivity Repo]: ';
+  static const String themeRepoLog = '[Theme Repo]: ';
+  static const String authRepoLog = '[Auth Repo]: ';
+  static const String userRepoLog = '[User Repo]: ';
+  static const String chatRepoLog = '[Chat Repo]: ';
 
   //Hive
   static const String themeKey = 'ThemeKey';

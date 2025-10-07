@@ -9,6 +9,7 @@ const double bottomNavBarIconSize = 27;
 const double fabIconSize = 28;
 const double settingsIconSize = 22;
 const double usersIconSize = 25;
+const double chatIconSize = 40;
 
 
 

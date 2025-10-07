@@ -11,12 +11,14 @@ import 'package:jonnverse/core/services/firebase_service.dart';
 import 'package:jonnverse/core/services/hive_service.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/core/services/snackbar_service.dart';
+import 'package:jonnverse/core/services/supabase_service.dart';
 
 GetIt locator = GetIt.instance;
 void setupLocator(){
   //Services
   locator.registerLazySingleton(() => NavigationService());
   locator.registerLazySingleton(() => FirebaseService());
+  locator.registerLazySingleton(() => SupabaseService());
   locator.registerLazySingleton(() => FilePickerService());
   locator.registerLazySingleton(() => HiveService());
   locator.registerLazySingleton(() => SnackBarService());

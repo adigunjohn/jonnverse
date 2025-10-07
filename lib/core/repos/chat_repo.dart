@@ -1,13 +1,18 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
 import 'package:jonnverse/core/models/metadata.dart';
 import 'package:jonnverse/core/services/firebase_service.dart';
+import 'package:jonnverse/core/services/supabase_service.dart';
 import 'package:jonnverse/ui/common/strings.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ChatRepo{
   final FirebaseService _firebaseService = locator<FirebaseService>();
+  final SupabaseService _supabaseService = locator<SupabaseService>();
+
 
   String sortAndJoin(String id1, String id2) {
     List<String> strings = [id1, id2];
@@ -15,19 +20,34 @@ class ChatRepo{
     return strings.join('+');
   }
 
-  Future<void> sendMessage({required String receiverName, required String senderId, required String receiverId,required JMessage message}) async{
-    final chatId = sortAndJoin(senderId, receiverId);
+  Future<void> sendMessage({required JMessage message}) async{
+    final chatId = sortAndJoin(message.senderId, message.receiverId);
     try{
       await _firebaseService.sendMessage(chatId, message);
-      log('${AppStrings.chatRepoLog}Message sent to $receiverName successfully');
+      log('${AppStrings.chatRepoLog}Message sent to ${message.receiverName} successfully');
     }
     on FirebaseException catch(e){
-      log('${AppStrings.chatRepoLog}Firebase Error sending message to $receiverName: ${e.code} - ${e.message}');
-      throw Exception('Failed to send message to $receiverName. Please try again.');
+      log('${AppStrings.chatRepoLog}Firebase Error sending message to ${message.receiverName}: ${e.code} - ${e.message}');
+      throw Exception('Failed to send message to ${message.receiverName}. Please try again.');
     }
     catch(e){
-      log('${AppStrings.chatRepoLog}Error sending message to $receiverName: $e');
-      throw Exception('Failed to send message to $receiverName. Please try again.');
+      log('${AppStrings.chatRepoLog}Error sending message to ${message.receiverName}: $e');
+      throw Exception('Failed to send message to ${message.receiverName}. Please try again.');
+    }
+  }
+
+  Future<String> uploadFile({required String filename, required File file}) async{
+    try{
+      final url = await _supabaseService.uploadFile(file, filename);
+      return url;
+    }
+    on StorageException catch(e){
+      log('${AppStrings.chatRepoLog}Firebase Error uploading file: ${e.statusCode} - ${e.error}  - ${e.message}');
+      throw Exception('Failed to upload file. Please try again.');
+    }
+    catch(e){
+      log('${AppStrings.chatRepoLog}Error uploading file: $e');
+      throw Exception('Failed to upload file. Please try again.');
     }
   }
 
