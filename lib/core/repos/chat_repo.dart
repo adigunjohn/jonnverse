@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
+import 'package:jonnverse/core/models/metadata.dart';
 import 'package:jonnverse/core/services/firebase_service.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 
@@ -30,20 +31,20 @@ class ChatRepo{
     }
   }
 
-  Future<bool> collectionExists(String senderId, String receiverId) async{
-    final chatId = sortAndJoin(senderId, receiverId);
-    try{
-      final value = await _firebaseService.collectionExists(chatId);
-      return value;
-    }on FirebaseException catch(e){
-      log('${AppStrings.chatRepoLog}Firebase Error checking if chat exists:: ${e.code} - ${e.message}');
-      throw Exception('Failed to check if chat exists. Please try again.');
-    }
-    catch(e){
-      log('${AppStrings.chatRepoLog}Error checking if chat exists: $e');
-      throw Exception('Failed to check if chat exists. Please try again.');
-    }
-    }
+  // Future<bool> collectionExists(String senderId, String receiverId) async{
+  //   final chatId = sortAndJoin(senderId, receiverId);
+  //   try{
+  //     final value = await _firebaseService.collectionExists(chatId);
+  //     return value;
+  //   }on FirebaseException catch(e){
+  //     log('${AppStrings.chatRepoLog}Firebase Error checking if chat exists:: ${e.code} - ${e.message}');
+  //     throw Exception('Failed to check if chat exists. Please try again.');
+  //   }
+  //   catch(e){
+  //     log('${AppStrings.chatRepoLog}Error checking if chat exists: $e');
+  //     throw Exception('Failed to check if chat exists. Please try again.');
+  //   }
+  //   }
 
 
   Stream<List<JMessage>> getChatMessages({required String senderId, required String receiverId}) {
@@ -60,6 +61,21 @@ class ChatRepo{
     catch(e){
       log('${AppStrings.chatRepoLog}Error getting chat messages: $e');
       throw Exception('Failed to get chat messages. Please try again');
+    }
+  }
+
+  Stream<List<Metadata>> getAllChats({required String id}) {
+    try{
+      final messages = _firebaseService.getAllChats(id);
+      return messages;
+    }
+    on FirebaseException catch(e){
+      log('${AppStrings.chatRepoLog}Firebase Error getting all chats: ${e.code} - ${e.message}');
+      throw Exception('Failed to get all chats. Please try again.');
+    }
+    catch(e){
+      log('${AppStrings.chatRepoLog}Error getting all chats: $e');
+      throw Exception('Failed to get all chats. Please try again');
     }
   }
 

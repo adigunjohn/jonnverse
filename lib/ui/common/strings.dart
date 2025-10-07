@@ -42,13 +42,17 @@ class AppStrings{
   static const String noMessages = 'No messages yet.';
   static const String geminiFromGoogle = 'Gemini from Google LLC';
   static const String gemini = 'Gemini';
+  static const String errorGettingChats = 'Failed to fetch all available chats';
 
   //UserView
   static const String emptyUsers = 'No users available';
   static const String availableUsers = 'All available users';
+  static const String errorGettingUsers = 'Failed to fetch all the available users';
 
   //ChatView
   static const String typeMessage = 'Type a message';
+  static const String errorGettingMessages = 'Failed to fetch chat messages';
+  static const String startConversation = 'Start a conversation';
 
 
   //SettingsView

@@ -1,10 +1,8 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/app/config/routes.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
-import 'package:jonnverse/core/repos/chat_repo.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/providers/chats_notifier.dart';
 import 'package:jonnverse/ui/common/strings.dart';
@@ -56,7 +54,6 @@ class _ChatViewState extends ConsumerState<ChatView> {
   @override
   Widget build(BuildContext context) {
     final chatMessages = ref.watch(chatStreamProvider(_chatIds));
-    // final chatExists = ref.watch(chatExistFutureProvider(ChatIds(senderId: widget.userId!, receiverId: widget.receiverId!),),);
     return Scaffold(
       appBar: AppBar(
         leadingWidth: double.infinity,
@@ -203,7 +200,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                 if (chat.isEmpty) {
                   return Center(
                     child: Text(
-                      'No messages yet',
+                      AppStrings.startConversation,
                       style: Theme.of(context).textTheme.bodySmall,
                       maxLines: 2,
                       textAlign: TextAlign.center,
@@ -244,12 +241,9 @@ class _ChatViewState extends ConsumerState<ChatView> {
                 );
               },
               error: (error, stackTrace) {
-                log(
-                  'Error occurred while fetching all the available users: $error $stackTrace',
-                );
                 return Center(
                   child: Text(
-                    'Failed to fetch all the available users',
+                    AppStrings.errorGettingMessages,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 );
@@ -276,7 +270,8 @@ class _ChatViewState extends ConsumerState<ChatView> {
                     message: _controller.text.trim(),
                     time: DateTime.now(),
                   );
-                  await ChatRepo().sendMessage(receiverName: widget.receiverName!, senderId: widget.userId!, receiverId: widget.receiverId!, message: message);
+                  final chatRepo = ref.read(chatRepoProvider);
+                  await chatRepo.sendMessage(receiverName: widget.receiverName!, senderId: widget.userId!, receiverId: widget.receiverId!, message: message);
                   _controller.clear();
                 }
               },

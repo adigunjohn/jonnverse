@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/app/config/routes.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
+import 'package:jonnverse/providers/auth_notifier.dart';
+import 'package:jonnverse/providers/chats_notifier.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
@@ -28,6 +30,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
   }
   @override
   Widget build(BuildContext context) {
+    final allChats = ref.watch(allChatsStreamProvider);
+    final sender = ref.watch(authProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -47,80 +51,112 @@ class _HomeViewState extends ConsumerState<HomeView> {
         child: Icon(CupertinoIcons.sparkles,color: kCOnAccentColor, size: fabIconSize,),
       ),
       body: SafeArea(
-        child: 1 == 2
-            ? Center(
-              child: Text(
-                AppStrings.noChatsYet,
-                style: Theme.of(context).textTheme.bodySmall,
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-              ),
-            )
-            : Column(
-            children: [
-              Expanded(
-                child: Scrollbar(
-                  radius: Radius.circular(10),
-                  controller: _scrollController,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 15, left: 15),
-                    child: ListView(
-                      children: [
-                        ChatTile(
-                            time: '11:56 AM',
-                            lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
-                            badgeCount: 7,
-                            userDp: AppStrings.dp1,
-                            userName: AppStrings.randomMail,
-                          onTap: (){
-                          // _navigationService.push(ChatView(userName: AppStrings.randomName,userMail: AppStrings.randomMail,));
-                          },
-                        ),
-                        ChatTile(
-                            time: '11:56 AM',
-                            lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
-                            badgeCount: 7,
-                            userDp: AppStrings.dp1,
-                            userName: AppStrings.randomMail),
-                        ChatTile(
-                            time: '11:56 AM',
-                            lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
-                            badgeCount: 7,
-                            userDp: AppStrings.dp1,
-                            userName: AppStrings.randomMail),
-                        ChatTile(
-                            isAI: true,
-                            time: '11:56 AM',
-                            badgeCount: 7,
-                            userName: AppStrings.geminiFromGoogle,
-                          onTap: (){
-                            _navigationService.push(GeminiChatView());
-                          },
-                        ),
-                        ChatTile(
-                            time: '11:56 AM',
-                            lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
-                            badgeCount: 7,
-                            userDp: AppStrings.dp1,
-                            userName: AppStrings.randomMail),
-                      ]
+        child: allChats.when(
+            data: (allChats) {
+              if (allChats.isEmpty) {
+                return Center(
+                  child: Text(
+                    AppStrings.noChatsYet,
+                    style: Theme.of(context).textTheme.bodySmall,
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              }
+              return Column(
+                  children: [
+                    Expanded(
+                      child: Scrollbar(
+                        radius: Radius.circular(10),
+                        controller: _scrollController,
+                        child:
+                        // Padding(
+                        //   padding: const EdgeInsets.only(right: 15, left: 15),
+                        //   child:
+                        //   ListView(
+                        //     children: [
+                        //       ChatTile(
+                        //           time: '11:56 AM',
+                        //           lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
+                        //           badgeCount: 7,
+                        //           userDp: AppStrings.dp1,
+                        //           userName: AppStrings.randomMail,
+                        //         onTap: (){
+                        //         // _navigationService.push(ChatView(userName: AppStrings.randomName,userMail: AppStrings.randomMail,));
+                        //         },
+                        //       ),
+                        //       ChatTile(
+                        //           time: '11:56 AM',
+                        //           lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
+                        //           badgeCount: 7,
+                        //           userDp: AppStrings.dp1,
+                        //           userName: AppStrings.randomMail),
+                        //       ChatTile(
+                        //           time: '11:56 AM',
+                        //           lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
+                        //           badgeCount: 7,
+                        //           userDp: AppStrings.dp1,
+                        //           userName: AppStrings.randomMail),
+                        //       ChatTile(
+                        //           isAI: true,
+                        //           time: '11:56 AM',
+                        //           badgeCount: 7,
+                        //           userName: AppStrings.geminiFromGoogle,
+                        //         onTap: (){
+                        //           _navigationService.push(GeminiChatView());
+                        //         },
+                        //       ),
+                        //       ChatTile(
+                        //           time: '11:56 AM',
+                        //           lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
+                        //           badgeCount: 7,
+                        //           userDp: AppStrings.dp1,
+                        //           userName: AppStrings.randomMail),
+                        //     ]
+                        //   ),
+                        // ),
+                        ListView.builder(
+                            padding: const EdgeInsets.only(right: 15, left: 15),
+                            itemCount: allChats.length,
+                            itemBuilder: (context, index){
+                              final chat = allChats[index];
+                              return ChatTile(
+                                time: chat.timestamp.toString(),
+                                lastMessage: chat.lastMessage,
+                                // lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
+                                badgeCount: 7,
+                                userDp: AppStrings.dp1,
+                                userName: chat.receiverName,
+                                onTap: (){
+                                  _navigationService.push(ChatView(
+                                    userId: sender.user?.uid,
+                                    receiverName: chat.receiverName,
+                                    receiverMail: chat.receiverMail,
+                                    receiverId: chat.receiverId,
+                                    userMail: sender.user?.email,
+                                    userName: sender.user?.name,
+                                  ));
+                                },
+                              );
+                            }),
+                      ),
                     ),
-                  )
-                  // ListView.builder(
-                  //   padding: const EdgeInsets.only(right: 15, left: 15),
-                  //   itemCount: 5,
-                  //     itemBuilder: (context, index){
-                  //    return ChatTile(
-                  //        time: '11:56 AM',
-                  //        lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
-                  //        badgeCount: 7,
-                  //        userDp: AppStrings.dp1,
-                  //        userName: AppStrings.randomMail);
-                  // }),
+                  ]);
+            },
+            error: (error, stackTrace) {
+              return Center(
+                child: Text(
+                  AppStrings.errorGettingChats,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-              ),
-        ]),
+              );
+            },
+            loading: (){
+              return Center(
+                child: CircularProgressIndicator(color: kCAccentColor),
+              );}
+        ),
       ),
     );
   }

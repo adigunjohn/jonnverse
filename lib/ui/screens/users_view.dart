@@ -1,14 +1,10 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/app/config/routes.dart';
-import 'package:jonnverse/core/repos/user_repo.dart';
-import 'package:jonnverse/core/services/dialog_service.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/providers/all_users_notifier.dart';
 import 'package:jonnverse/providers/auth_notifier.dart';
-import 'package:jonnverse/providers/chats_notifier.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
@@ -171,9 +167,8 @@ class UsersView extends ConsumerWidget {
                         );
                 },
                 error: (error, stackTrace){
-                  log('Error occurred while fetching all the available users: $error $stackTrace');
                   return Center(child: Text(
-                    'Failed to fetch all the available users',
+                    AppStrings.errorGettingUsers,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),);
                 },

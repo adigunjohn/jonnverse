@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/app/config/routes.dart';
 import 'package:jonnverse/core/enums/apptheme.dart';
 import 'package:jonnverse/core/services/dialog_service.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
-import 'package:jonnverse/providers/all_users_notifier.dart';
 import 'package:jonnverse/providers/auth_notifier.dart';
 import 'package:jonnverse/providers/nav_notifier.dart';
 import 'package:jonnverse/providers/theme_notifier.dart';
@@ -197,7 +197,9 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
               ),
               SettingsTile(
                 title: AppStrings.closeApp,
-                onTap: (){},
+                onTap: (){
+                  SystemNavigator.pop();
+                },
                 icon: Icons.exit_to_app_rounded,
               ),
             ],

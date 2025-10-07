@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
+import 'package:jonnverse/core/models/metadata.dart';
 import 'package:jonnverse/core/models/user.dart' as jonnverse;
 import 'package:jonnverse/firebase_options.dart';
 import 'package:jonnverse/ui/common/strings.dart';
@@ -20,6 +21,7 @@ class FirebaseService {
   final googleSignIn = GoogleSignIn.instance;
   final CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
   final CollectionReference chatsCollection = FirebaseFirestore.instance.collection('chats');
+  final CollectionReference userChatsCollection = FirebaseFirestore.instance.collection('user-chats');
 
   User? getUser() {
     final user = auth.currentUser;
@@ -86,15 +88,31 @@ class FirebaseService {
     return users;
   }
 
-  Future<void> sendMessage(String chatId, JMessage message)async{
+  Future<void> sendMessage(String chatId, JMessage message,)async{
     await chatsCollection.doc(chatId).collection('messages').add(message.toJson());
+    final metadataSender = Metadata(
+        receiverId: message.receiverId,
+        receiverName: message.receiverName,
+        receiverMail: message.receiverMail,
+        lastMessage: message.message ?? message.image ?? message.file!,
+        timestamp: message.time,
+    );
+    final metadataReceiver = Metadata(
+      receiverId: message.senderId,
+      receiverName: message.senderName,
+      receiverMail: message.senderMail,
+      lastMessage: message.message ?? message.image ?? message.file!,
+      timestamp: message.time,
+    );
+    await userChatsCollection.doc(message.senderId).collection('users').doc(message.receiverId).set(metadataSender.toJson(),SetOptions(merge: true));
+    await userChatsCollection.doc(message.receiverId).collection('users').doc(message.senderId).set(metadataReceiver.toJson(),SetOptions(merge: true));
   }
 
-  Future<bool> collectionExists(String chatId) async {
-      final chatCollectionRef = await chatsCollection.doc(chatId).get();
-      final snapshot = chatCollectionRef.exists;
-      return snapshot;
-  }
+  // Future<bool> collectionExists(String chatId) async {
+  //     final chatCollectionRef = await chatsCollection.doc(chatId).get();
+  //     final snapshot = chatCollectionRef.exists;
+  //     return snapshot;
+  // }
 
   Stream<List<JMessage>> getChatMessages(String chatId) {
     final allMessages = chatsCollection.doc(chatId).collection('messages').orderBy('time', descending: false).snapshots();
@@ -106,7 +124,13 @@ class FirebaseService {
     });
     return messages;
   }
-
+  Stream<List<Metadata>> getAllChats(String id) {
+    final allMessages = userChatsCollection.doc(id).collection('users').orderBy('timestamp', descending: true).snapshots();
+    final messages = allMessages.map((e){
+      return e.docs.map((e) => Metadata.fromJson(e.data())).toList();
+    });
+    return messages;
+  }
 
 
   // Stream getAllChats() {
