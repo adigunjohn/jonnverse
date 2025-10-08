@@ -102,7 +102,7 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
             ),
             ChatField(
               controller: _controller,
-              fileVisible: true,
+              // fileVisible: true,
               // image: AppStrings.dp,
               file: 'my resume.pdf',
               sendTap: (){},

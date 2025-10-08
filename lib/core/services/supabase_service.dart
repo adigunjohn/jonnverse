@@ -12,6 +12,7 @@ class SupabaseService {
       return;
     }
     await Supabase.initialize(url: AppStrings.supabaseUrl, anonKey: supabaseKey);
+    log('${AppStrings.supabaseServiceLog} Supabase successfully initialized');
   }
 
   final supabase = Supabase.instance.client;

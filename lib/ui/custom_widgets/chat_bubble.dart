@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jonnverse/ui/common/date_time_format.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
 
@@ -15,6 +16,7 @@ class ChatBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Container(
@@ -38,7 +40,26 @@ class ChatBubble extends StatelessWidget {
                     child: Center(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(25),
-                          child: Image.asset(image.toString(),fit: BoxFit.cover,),),
+                          child: Image.network(
+                            image.toString(),
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return Center(child: child);
+                              return SizedBox(
+                                height: 60,
+                                width: 60,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    color: kCAccentColor,
+                                    value: loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                                        : null,
+                                  ),
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) => Icon(Icons.image_not_supported_rounded, color: kCRedColor,),
+                          ),),
                     ),
                   ),
                 ),
@@ -62,7 +83,7 @@ class ChatBubble extends StatelessWidget {
             ),
           ),
           SizedBox(height: 2),
-          Text(time,
+          Text(formatTime(time),
             style: Theme.of(context).textTheme.headlineSmall,
             overflow: TextOverflow.ellipsis,),
         ],

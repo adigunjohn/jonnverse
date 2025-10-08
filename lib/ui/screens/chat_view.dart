@@ -226,29 +226,36 @@ class _ChatViewState extends ConsumerState<ChatView> {
                     return Column(
                       children: [
                         Expanded(
-                          child: Scrollbar(
-                            radius: Radius.circular(10),
-                            controller: _scrollController,
-                            child: ListView.builder(
-                              padding: EdgeInsets.only(
-                                right: 15,
-                                left: 15,
-                                bottom: 75,
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Scrollbar(
+                              radius: Radius.circular(10),
+                              controller: _scrollController,
+                              child: ListView.builder(
+                                padding: EdgeInsets.only(
+                                  right: 15,
+                                  left: 15,
+                                  bottom: 75,
+                                ),
+                                itemCount: chat.length,
+                                controller: _scrollController,
+                                reverse: true,
+                                shrinkWrap: true,
+                                itemBuilder: (_, index) {
+                                  final message = chat.reversed.toList()[index];
+                                  return ChatBubble(
+                                    isUser: message.senderId == widget.userId,
+                                    message: message.message,
+                                    file: message.file,
+                                    image: message.image,
+                                    // image: AppStrings.dp,
+                                    time: message.time.toString(),
+                                    onTap: () {
+                                      _navigationService.push(ShowImageView(image: message.image,));
+                                    },
+                                  );
+                                },
                               ),
-                              itemCount: chat.length,
-                              itemBuilder: (_, index) {
-                                final message = chat[index];
-                                return ChatBubble(
-                                  isUser: message.senderId == widget.userId,
-                                  message: message.message,
-                                  file: null,
-                                  // image: AppStrings.dp,
-                                  time: message.time.toString(),
-                                  onTap: () {
-                                    _navigationService.push(ShowImageView());
-                                  },
-                                );
-                              },
                             ),
                           ),
                         ),
@@ -270,7 +277,6 @@ class _ChatViewState extends ConsumerState<ChatView> {
                 ),
                 ChatField(
                   controller: _controller,
-                  fileVisible: chatProvider.filePath != null,
                   image: chatProvider.isImagePicked ? chatProvider.filePath : null,
                   file: chatProvider.isFilePicked ? chatProvider.fileName : null,
                   sendTap: () async{
@@ -285,8 +291,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                       time: DateTime.now(),
                     );
                     if(_controller.text.trim().isNotEmpty || chatProvider.filePath != null){
-                      ref.read(chatNotifierProvider.notifier).sendMessage(
-                        message: message,
+                      ref.read(chatNotifierProvider.notifier).sendMessage(_scrollController, message: message,
                       ).then((error){
                         if(error != null){
                           _snackBarService.showSnackBar(message: error);
@@ -299,6 +304,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                   cameraTap: () {
                     _dialogService.showBottom(context,
                       title: AppStrings.pickImage,
+                      subtitle: AppStrings.pickImageSub,
                       child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -307,14 +313,14 @@ class _ChatViewState extends ConsumerState<ChatView> {
                             _navigationService.pop();
                             ref.read(chatNotifierProvider.notifier).pickImage(ImageSource.camera);
                           },
-                          icon: Icon(Icons.camera_alt_rounded, color: kCAccentColor, size: chatIconSize,),
+                          icon: Icon(Icons.camera_alt_rounded, color: kCGreyColor, size: chatIconSize,),
                         ),
                         IconButton(
                           onPressed: () {
                            _navigationService.pop();
                             ref.read(chatNotifierProvider.notifier).pickImage(ImageSource.gallery);
                           },
-                          icon: Icon(Icons.photo_library_rounded, color: kCAccentColor, size: chatIconSize,),
+                          icon: Icon(Icons.photo_library_rounded, color: kCGreyColor, size: chatIconSize,),
                         ),
                       ],
                     ),);

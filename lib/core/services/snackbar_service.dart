@@ -13,6 +13,8 @@ class SnackBarService {
 
     final snackBar = SnackBar(
       duration: Duration(seconds: 1),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      elevation: 5,
       width: screenWidth(context)/1.5,
       content: Center(
         child: Text(message,style: Theme.of(context).textTheme.bodyMedium,overflow: TextOverflow.ellipsis,maxLines: 3,),

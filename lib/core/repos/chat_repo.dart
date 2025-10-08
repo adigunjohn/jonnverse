@@ -42,12 +42,12 @@ class ChatRepo{
       return url;
     }
     on StorageException catch(e){
-      log('${AppStrings.chatRepoLog}Firebase Error uploading file: ${e.statusCode} - ${e.error}  - ${e.message}');
+      log('${AppStrings.chatRepoLog}Supabase Error uploading file: ${e.statusCode} - ${e.error}  - ${e.message}');
       throw Exception('Failed to upload file. Please try again.');
     }
     catch(e){
       log('${AppStrings.chatRepoLog}Error uploading file: $e');
-      throw Exception('Failed to upload file. Please try again.');
+      throw Exception('Failed to upload file. Please try again');
     }
   }
 

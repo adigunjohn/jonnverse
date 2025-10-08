@@ -1,5 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jonnverse/app/config/locator.dart';
@@ -84,7 +86,7 @@ class ChatNotifier extends Notifier<ChatState> {
   @override
   ChatState build() => ChatState();
 
-  Future<String?> sendMessage({required JMessage message}) async {
+  Future<String?> sendMessage(ScrollController scrollController, {required JMessage message}) async {
     state = state.copyWith(isLoading: true);
     JMessage? jmessage;
     try {
@@ -116,6 +118,8 @@ class ChatNotifier extends Notifier<ChatState> {
         );
       }
       await _chatRepo.sendMessage(message: jmessage ?? message);
+      clearFile();
+      scrollToBottom(scrollController);
       log('Message sent to ${message.receiverName} successfully');
       return null;
     } catch (e) {
@@ -129,6 +133,7 @@ class ChatNotifier extends Notifier<ChatState> {
   Future<void> pickImage(ImageSource source)async{
     final result = await _filePickerService.pickImage(source: source);
     if(result != null){
+      clearFile();
       state = state.copyWith(filePath: result.path, fileName: result.name, isImagePicked: true, isFilePicked: false);
     }
   }
@@ -137,12 +142,26 @@ class ChatNotifier extends Notifier<ChatState> {
     final result = await _filePickerService.pickFile();
     if(result != null && result.isNotEmpty){
       final file = result.first;
+      clearFile();
       state = state.copyWith(filePath: file.path, fileName: file.name, isFilePicked: true, isImagePicked: false);
     }
   }
 
   void clearFile(){
     state = state.copyWith(filePath: null, fileName: null, isFilePicked: false, isImagePicked: false);
+  }
+
+  void scrollToBottom(ScrollController scrollController){
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if(scrollController.hasClients){
+        scrollController.animateTo(
+          0.0,
+          // scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 }
  //final chatNotifierProvider = NotifierProvider<ChatNotifier, bool>(() => ChatNotifier());

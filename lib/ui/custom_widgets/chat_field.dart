@@ -7,12 +7,11 @@ import 'package:jonnverse/ui/common/ui_helpers.dart';
 import 'package:jonnverse/ui/custom_widgets/jn_textfield.dart';
 
 class ChatField extends StatelessWidget {
-  const ChatField({super.key, required this.controller, this.cameraTap, this.fileTap,required this.sendTap, this.fileVisible = false, this.image, this.file, this.onDeleteFile});
+  const ChatField({super.key, required this.controller, this.cameraTap, this.fileTap,required this.sendTap, this.image, this.file, this.onDeleteFile});
   final TextEditingController controller;
   final void Function()? cameraTap;
   final void Function()? fileTap;
   final void Function()? sendTap;
-  final bool fileVisible;
   final String? image;
   final String? file;
   final void Function()? onDeleteFile;
@@ -27,7 +26,7 @@ class ChatField extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Visibility(
-              visible: fileVisible,
+              visible: image != null || file != null,
               child: SizedBox(
                 child: Stack(
                   children: [

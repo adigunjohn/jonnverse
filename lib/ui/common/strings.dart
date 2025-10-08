@@ -54,6 +54,7 @@ class AppStrings{
   static const String errorGettingMessages = 'Failed to fetch chat messages';
   static const String startConversation = 'Start a conversation';
   static const String pickImage = 'Pick Image';
+  static const String pickImageSub = 'Select image from';
 
 
   //SettingsView
