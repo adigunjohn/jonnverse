@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jonnverse/ui/common/strings.dart';
@@ -45,10 +46,11 @@ class ChatTile extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: kCGrey300Color,
-                  image: DecorationImage(
-                    image: AssetImage(userDp.toString()),
-                    fit: BoxFit.cover,
-                  ),
+                  image: userDp != '' && userDp != null ? DecorationImage(image: CachedNetworkImageProvider(userDp.toString()), fit: BoxFit.cover) : null,
+                  // image: DecorationImage(
+                  //   image: AssetImage(userDp.toString()),
+                  //   fit: BoxFit.cover,
+                  // ),
                 ),
               ),
               Expanded(

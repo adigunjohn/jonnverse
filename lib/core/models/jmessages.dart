@@ -9,6 +9,7 @@ class JMessage {
   final String receiverMail;
   final DateTime time;
   final String? file;
+  final String? fileName;
   final String? image;
 
   JMessage({
@@ -21,6 +22,7 @@ class JMessage {
     required this.receiverMail,
     required this.time,
     this.file,
+    this.fileName,
     this.image});
 
   Map<String, dynamic> toJson(){
@@ -34,7 +36,8 @@ class JMessage {
       'receiverMail': receiverMail,
       'time': time,
       'file': file,
-      'image': image
+      'image': image,
+      'fileName': fileName,
     };
   }
 
@@ -50,7 +53,8 @@ class JMessage {
         // time: json['time'],
         time: DateTime.parse(json['time'].toDate().toString()),
         file: json['file'],
-        image: json['image']
+        image: json['image'],
+      fileName: json['fileName'],
     );
   }
 

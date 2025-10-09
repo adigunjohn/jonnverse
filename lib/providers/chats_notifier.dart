@@ -101,6 +101,7 @@ class ChatNotifier extends Notifier<ChatState> {
           receiverMail: message.receiverMail,
           time: message.time,
           message: message.message,
+          fileName: state.fileName,
           image: imageUrl
         );
       } else if(state.isFilePicked && state.filePath != null){
@@ -114,7 +115,8 @@ class ChatNotifier extends Notifier<ChatState> {
           receiverMail: message.receiverMail,
           time: message.time,
           message: message.message,
-          file: fileUrl
+          file: fileUrl,
+          fileName: state.fileName
         );
       }
       await _chatRepo.sendMessage(message: jmessage ?? message);

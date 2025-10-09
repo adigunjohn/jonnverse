@@ -4,7 +4,7 @@ import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/app/config/routes.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/providers/all_users_notifier.dart';
-import 'package:jonnverse/providers/auth_notifier.dart';
+import 'package:jonnverse/providers/user_notifier.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
@@ -18,7 +18,7 @@ class UsersView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allUsers = ref.watch(allUsersStreamProvider);
-    final sender = ref.watch(authProvider);
+    final sender = ref.watch(userProvider);
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -146,6 +146,7 @@ class UsersView extends ConsumerWidget {
                                 itemCount: users.length,
                                 itemBuilder: (_, index) {
                                   final user = users[index];
+                                  final otherUser = ref.watch(otherUserFutureProvider(user.uid));
                                   return UsersTile(
                                     userName: user.name!,
                                     userMail: user.email,
@@ -157,6 +158,7 @@ class UsersView extends ConsumerWidget {
                                         receiverId: user.uid,
                                       userMail: sender.user?.email,
                                       userName: sender.user?.name,
+                                        receiverDp: otherUser.value?.profilePic,
                                       ));
                                     },
                                   );

@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/app/config/routes.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
-import 'package:jonnverse/providers/auth_notifier.dart';
+import 'package:jonnverse/providers/all_users_notifier.dart';
 import 'package:jonnverse/providers/chats_notifier.dart';
+import 'package:jonnverse/providers/user_notifier.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
@@ -31,7 +32,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   @override
   Widget build(BuildContext context) {
     final allChats = ref.watch(allChatsStreamProvider);
-    final sender = ref.watch(authProvider);
+    final sender = ref.watch(userProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -121,12 +122,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             itemCount: allChats.length,
                             itemBuilder: (context, index){
                               final chat = allChats[index];
+                              final otherUser = ref.watch(otherUserFutureProvider(chat.receiverId));
+                              // log(otherUser.toString());
                               return ChatTile(
                                 time: chat.timestamp.toString(),
                                 lastMessage: chat.lastMessage,
                                 // lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
                                 badgeCount: 7,
-                                userDp: AppStrings.dp1,
+                                userDp: otherUser.value?.profilePic,
                                 userName: chat.receiverName,
                                 onTap: (){
                                   _navigationService.push(ChatView(
@@ -136,6 +139,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                     receiverId: chat.receiverId,
                                     userMail: sender.user?.email,
                                     userName: sender.user?.name,
+                                    receiverDp: otherUser.value?.profilePic,
                                   ));
                                 },
                               );

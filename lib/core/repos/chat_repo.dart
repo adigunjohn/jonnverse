@@ -38,7 +38,7 @@ class ChatRepo{
 
   Future<String> uploadFile({required String filename, required File file}) async{
     try{
-      final url = await _supabaseService.uploadFile(file, filename);
+      final url = await _supabaseService.uploadFile(file, 'chats/$filename');
       return url;
     }
     on StorageException catch(e){

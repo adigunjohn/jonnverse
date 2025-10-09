@@ -66,13 +66,13 @@ class FirebaseService {
     await auth.signOut();
   }
 
-  Future<void> saveUser(User? user, jonnverse.User value, {bool? merge = false}) async {
-    if (user != null) {
-      await usersCollection.doc(user.uid).set(value.toJson(), SetOptions(merge: merge));
+  Future<void> saveUser(String? userId, jonnverse.User value, {bool? merge = false}) async {
+    if (userId != null) {
+      await usersCollection.doc(userId).set(value.toJson(), SetOptions(merge: merge));
     }
   }
 
-  Future<jonnverse.User?> getUserDetails(String uid) async {
+  Future<jonnverse.User> getUserDetails(String uid) async {
     final user = await usersCollection.doc(uid).get();
     final userDetails = jonnverse.User.fromJson(
       user.data() as Map<String, dynamic>,
@@ -94,14 +94,14 @@ class FirebaseService {
         receiverId: message.receiverId,
         receiverName: message.receiverName,
         receiverMail: message.receiverMail,
-        lastMessage: message.message ?? (message.image ?? message.file!),
+        lastMessage: message.message ?? message.fileName!,
         timestamp: message.time,
     );
     final metadataReceiver = Metadata(
       receiverId: message.senderId,
       receiverName: message.senderName,
       receiverMail: message.senderMail,
-      lastMessage: message.message ?? (message.image ?? message.file!),
+      lastMessage: message.message ?? message.fileName!,
       timestamp: message.time,
     );
     await userChatsCollection.doc(message.senderId).collection('users').doc(message.receiverId).set(metadataSender.toJson(),SetOptions(merge: true));

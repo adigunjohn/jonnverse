@@ -58,6 +58,12 @@ dependencies:
   flutter_riverpod: ^3.0.1
   google_sign_in: ^7.2.0
   supabase_flutter: ^2.10.2
+  dio: ^5.1.2
+  path: ^1.8.3
+  cached_network_image: ^3.2.3
+  open_filex: ^4.0.5
+  flutter_pdfview: ^1.2.7
+#  permission_handler: ^10.4.0
 
 dev_dependencies:
   flutter_test:

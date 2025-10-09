@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/app/config/routes.dart';
 import 'package:jonnverse/core/enums/apptheme.dart';
@@ -9,6 +11,7 @@ import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/providers/auth_notifier.dart';
 import 'package:jonnverse/providers/nav_notifier.dart';
 import 'package:jonnverse/providers/theme_notifier.dart';
+import 'package:jonnverse/providers/user_notifier.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
@@ -30,6 +33,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
+    final user = ref.watch(userProvider);
     final auth = ref.watch(authProvider);
     return Scaffold(
       appBar: AppBar(
@@ -54,7 +58,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: kCGrey300Color,
-                      image: DecorationImage(image: AssetImage(AppStrings.dp1,), fit: BoxFit.cover),
+                      image: user.user!.profilePic != null && user.user!.profilePic != '' ? DecorationImage(image: CachedNetworkImageProvider(user.user!.profilePic!), fit: BoxFit.cover) : null,
                     ),
                     // child: Image.asset(AppStrings.dp, fit: BoxFit.cover),
                   ),
@@ -62,7 +66,38 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                     bottom: 0,
                     right: 0,
                     child: GestureDetector(
-                      onTap: (){},
+                      onTap: (){
+                        _dialogService.showBottom(context,
+                          title: AppStrings.pickImage,
+                          subtitle: AppStrings.pickImageSub,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              IconButton(
+                                onPressed: () async{
+                                  _navigationService.pop();
+                                  final message = await ref.read(userProvider.notifier).uploadProfilePicture(ImageSource.camera);
+                                  if(message != null) {
+                                    if (!context.mounted) return;
+                                    _dialogService.showAlertDialog(context, title: 'Update Failed',subtitle: 'Profile picture update failed\n$message');
+                                  }
+                                },
+                                icon: Icon(Icons.camera_alt_rounded, color: kCGreyColor, size: chatIconSize,),
+                              ),
+                              IconButton(
+                                onPressed: () async {
+                                  _navigationService.pop();
+                                  final message = await ref.read(userProvider.notifier).uploadProfilePicture(ImageSource.gallery);
+                                  if(message != null) {
+                                    if (!context.mounted) return;
+                                    _dialogService.showAlertDialog(context, title: 'Update Failed',subtitle: 'Profile picture update failed\n$message');
+                                  }
+                                },
+                                icon: Icon(Icons.photo_library_rounded, color: kCGreyColor, size: chatIconSize,),
+                              ),
+                            ],
+                          ),);
+                      },
                       child: Container(
                         height: 40,
                         width: 40,
@@ -79,7 +114,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
               ),
               SizedBox(height: 15,),
               Text(
-                auth.user!.name!,
+                user.user!.name!,
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -87,7 +122,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
               SettingsTile(
                 title: AppStrings.mail,
                 icon: Icons.email,
-                subTitle: auth.user!.email,
+                subTitle: user.user!.email,
                 color: kCBlueShadeColor,
               ),
               SettingsTile(
@@ -185,6 +220,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                         }
                        else{
                           ref.read(navProvider.notifier).updateIndex(0);
+                          ref.read(userProvider.notifier).updateUser(null);
                          _navigationService.pushNamedAndRemoveUntil(LoginView.id);
                        }
                       },

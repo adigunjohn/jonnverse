@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,6 +26,7 @@ class ChatView extends ConsumerStatefulWidget {
     this.userId,
     this.userMail,
     this.userName,
+    this.receiverDp,
   });
   static const String id = Routes.chatView;
   final String? receiverMail;
@@ -33,6 +35,7 @@ class ChatView extends ConsumerStatefulWidget {
   final String? userName;
   final String? userMail;
   final String? receiverName;
+  final String? receiverDp;
   @override
   ConsumerState<ChatView> createState() => _ChatViewState();
 }
@@ -86,10 +89,11 @@ class _ChatViewState extends ConsumerState<ChatView> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: kCGrey300Color,
-                  image: DecorationImage(
-                    image: AssetImage(AppStrings.dp1),
-                    fit: BoxFit.cover,
-                  ),
+                  image: widget.receiverDp != null ? DecorationImage(image: CachedNetworkImageProvider(widget.receiverDp!), fit: BoxFit.cover) : null,
+                  // image: DecorationImage(
+                  //   image: AssetImage(AppStrings.dp1),
+                  //   fit: BoxFit.cover,
+                  // ),
                 ),
               ),
               SizedBox(width: 10),
@@ -247,6 +251,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                                     isUser: message.senderId == widget.userId,
                                     message: message.message,
                                     file: message.file,
+                                    fileName: message.fileName,
                                     image: message.image,
                                     // image: AppStrings.dp,
                                     time: message.time.toString(),

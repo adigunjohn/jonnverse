@@ -6,6 +6,7 @@ import 'package:jonnverse/app/config/routes.dart';
 import 'package:jonnverse/core/services/dialog_service.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/providers/auth_notifier.dart';
+import 'package:jonnverse/providers/user_notifier.dart';
 import 'package:jonnverse/providers/visibility_notifier.dart';
 import 'package:jonnverse/ui/common/input_validator.dart';
 import 'package:jonnverse/ui/common/strings.dart';
@@ -125,11 +126,12 @@ class _LoginViewState extends ConsumerState<RegisterView> {
                              email: _emailController.text,
                              password: _passwordController.text,
                              fullName: _nameController.text,);
-                           if(message != null){
+                           if(message.$1 != null){
                              if (!context.mounted) return;
-                             _dialogService.showAlertDialog(context, title: AppStrings.authError,subtitle: message);
+                             _dialogService.showAlertDialog(context, title: AppStrings.authError,subtitle: message.$1);
                            }
                            else{
+                             ref.read(userProvider.notifier).updateUser(message.$2!);
                              _emailController.clear();
                              _passwordController.clear();
                              _confirmPasswordController.clear();
@@ -142,11 +144,12 @@ class _LoginViewState extends ConsumerState<RegisterView> {
                       JnButton(
                         onTap: () async{
                            final message = await ref.read(authProvider.notifier).registerWithGoogle(context);
-                           if(message != null){
+                           if(message.$1 != null){
                              if (!context.mounted) return;
-                             _dialogService.showAlertDialog(context, title: AppStrings.authError,subtitle: message);
+                             _dialogService.showAlertDialog(context, title: AppStrings.authError,subtitle: message.$1);
                            }
                            else{
+                             ref.read(userProvider.notifier).updateUser(message.$2!);
                              _navigationService.pushNamed(NavView.id);
                              _emailController.clear();
                              _passwordController.clear();
