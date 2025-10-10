@@ -7,6 +7,7 @@ import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/providers/all_users_notifier.dart';
 import 'package:jonnverse/providers/chats_notifier.dart';
 import 'package:jonnverse/providers/user_notifier.dart';
+import 'package:jonnverse/ui/common/date_time_format.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
@@ -125,7 +126,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                               final otherUser = ref.watch(otherUserFutureProvider(chat.receiverId));
                               // log(otherUser.toString());
                               return ChatTile(
-                                time: chat.timestamp.toString(),
+                                time: formatTimeStamp(chat.timestamp.toString()),
                                 lastMessage: chat.lastMessage,
                                 // lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
                                 badgeCount: 7,

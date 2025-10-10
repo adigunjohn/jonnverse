@@ -93,7 +93,7 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
                           file: null,
                           // image: AppStrings.dp,
                           time: '',
-                          onTap: (){
+                          onImageTap: (){
                             _navigationService.push(ShowImageView());
                           },);
                       }),

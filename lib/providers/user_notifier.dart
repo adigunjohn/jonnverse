@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -32,9 +33,10 @@ class UserNotifier extends Notifier<UserState> {
   @override
   UserState build() => UserState(user: _userRepo.getUser());
 
-  String? updateUser(User? value) {
+  Future<String?> updateUser(User? value) async{
     try{
       state = state.copyWith(user: value);
+      await _userRepo.updateUserLocally(value!);
       return null;
     }catch(e){
       return 'Failed to update user';
@@ -57,17 +59,22 @@ class UserNotifier extends Notifier<UserState> {
     if(result != null){
       state = state.copyWith(profileImageName: result.name, profileImagePath: result.path);
     }
+    else{
+      log('No image picked');
+    }
   }
 
   void clearProfilePicture(){
     state = state.copyWith(profileImageName: null, profileImagePath: null);
+    log('Picked profile picture cleared');
   }
   Future<String?> uploadProfilePicture(ImageSource source)async{
+    state = state.copyWith(loading: true);
     if(await _connectivityRepo.hasInternet() == false)return AppStrings.noInternet;
     try{
-      pickProfileImage(source);
+      await pickProfileImage(source);
+      if(state.profileImagePath == null) return 'No image selected';
       final url = await _userRepo.uploadProfilePicture(filename: '${state.user!.email}/${state.profileImageName!}', file: File(state.profileImagePath!));
-      clearProfilePicture();
       final user = User(
           uid: state.user!.uid,
           name: state.user!.name,
@@ -75,9 +82,13 @@ class UserNotifier extends Notifier<UserState> {
           profilePic: url);
       state = state.copyWith(user: user);
       updateUserFirestore(user);
+      clearProfilePicture();
       return null;
     }catch(e){
+      clearProfilePicture();
       return e.toString().replaceFirst('Exception: ', '');
+    } finally{
+      state = state.copyWith(loading: false);
     }
   }
 

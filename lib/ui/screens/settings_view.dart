@@ -79,7 +79,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                                   final message = await ref.read(userProvider.notifier).uploadProfilePicture(ImageSource.camera);
                                   if(message != null) {
                                     if (!context.mounted) return;
-                                    _dialogService.showAlertDialog(context, title: 'Update Failed',subtitle: 'Profile picture update failed\n$message');
+                                    _dialogService.showAlertDialog(context, title: 'Update Failed',subtitle: message);
                                   }
                                 },
                                 icon: Icon(Icons.camera_alt_rounded, color: kCGreyColor, size: chatIconSize,),
@@ -90,7 +90,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                                   final message = await ref.read(userProvider.notifier).uploadProfilePicture(ImageSource.gallery);
                                   if(message != null) {
                                     if (!context.mounted) return;
-                                    _dialogService.showAlertDialog(context, title: 'Update Failed',subtitle: 'Profile picture update failed\n$message');
+                                    _dialogService.showAlertDialog(context, title: 'Update Failed',subtitle: message);
                                   }
                                 },
                                 icon: Icon(Icons.photo_library_rounded, color: kCGreyColor, size: chatIconSize,),

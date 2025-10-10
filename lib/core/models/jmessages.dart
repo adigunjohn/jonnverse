@@ -11,6 +11,7 @@ class JMessage {
   final String? file;
   final String? fileName;
   final String? image;
+  final String? filePath;
 
   JMessage({
     this.message,
@@ -23,6 +24,7 @@ class JMessage {
     required this.time,
     this.file,
     this.fileName,
+    this.filePath,
     this.image});
 
   Map<String, dynamic> toJson(){
@@ -38,6 +40,7 @@ class JMessage {
       'file': file,
       'image': image,
       'fileName': fileName,
+      'filePath': filePath,
     };
   }
 
@@ -55,6 +58,7 @@ class JMessage {
         file: json['file'],
         image: json['image'],
       fileName: json['fileName'],
+      filePath: json['filePath'] ?? '',
     );
   }
 

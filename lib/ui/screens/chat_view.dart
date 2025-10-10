@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/app/config/routes.dart';
+import 'package:jonnverse/core/enums/download.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
 import 'package:jonnverse/core/services/dialog_service.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
@@ -89,11 +90,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: kCGrey300Color,
-                  image: widget.receiverDp != null ? DecorationImage(image: CachedNetworkImageProvider(widget.receiverDp!), fit: BoxFit.cover) : null,
-                  // image: DecorationImage(
-                  //   image: AssetImage(AppStrings.dp1),
-                  //   fit: BoxFit.cover,
-                  // ),
+                  image: widget.receiverDp != null && widget.receiverDp != ''? DecorationImage(image: CachedNetworkImageProvider(widget.receiverDp!), fit: BoxFit.cover) : null,
                 ),
               ),
               SizedBox(width: 10),
@@ -245,21 +242,113 @@ class _ChatViewState extends ConsumerState<ChatView> {
                                 controller: _scrollController,
                                 reverse: true,
                                 shrinkWrap: true,
-                                itemBuilder: (_, index) {
-                                  final message = chat.reversed.toList()[index];
-                                  return ChatBubble(
-                                    isUser: message.senderId == widget.userId,
-                                    message: message.message,
-                                    file: message.file,
-                                    fileName: message.fileName,
-                                    image: message.image,
-                                    // image: AppStrings.dp,
-                                    time: message.time.toString(),
-                                    onTap: () {
-                                      _navigationService.push(ShowImageView(image: message.image,));
-                                    },
-                                  );
+                        itemBuilder: (_, index) {
+                          final message = chat.reversed.toList()[index];
+                          final chatRead = ref.read(chatNotifierProvider.notifier);
+
+                      final String? fileUrl = message.file ?? message.image;
+
+                      if (fileUrl != null) {
+                        Download downloadState = Download.download;
+
+                        if (chatProvider.downloadStates.containsKey(fileUrl)) {
+                          downloadState = chatProvider.downloadStates[fileUrl]!;
+                          return ChatBubble(
+                            isUser: message.senderId == widget.userId,
+                            message: message.message,
+                            file: message.file,
+                            fileName: message.fileName,
+                            image: message.image,
+                            filePath: message.filePath,
+                            time: message.time.toString(),
+                            download: downloadState,
+                            onDownloadTap: () async{
+                              if (downloadState != Download.downloaded && downloadState != Download.downloading) {
+                               final error = await chatRead.downloadFile(fileUrl, message.fileName!);
+                                if(error != null)_snackBarService.showSnackBar(message: error);
+                              }
+                            },
+                            onImageTap: () async{
+                              if (downloadState == Download.downloaded) {
+                                final path = await ref.read(fileRepoProvider).openImage(message.fileName!);
+                                _navigationService.push(ShowImageView(image: path, isDownloaded: true,));
+                              } else if(message.senderId == widget.userId){
+                                _navigationService.push(ShowImageView(image: message.filePath,isUser: true,));
+                              }
+                              _navigationService.push(ShowImageView(image: message.image));
+                            },
+                            onFileTap: () async {
+                              if (downloadState == Download.downloaded) {
+                                await ref.read(fileRepoProvider).openFile(message.fileName!);
+                              } else if(message.senderId == widget.userId){
+                                await ref.read(fileRepoProvider).openFilex(message.filePath!);
+                              } else {
+                              _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
+                              }
+                            },
+                          );
+                        } else {
+                          return FutureBuilder<bool>(
+                            future: chatRead.doesFileExist(message.fileName!),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState != ConnectionState.done) {
+                                downloadState = Download.download;
+                              } else if (snapshot.data == true) {
+                                downloadState = Download.downloaded;
+                              }
+                              return ChatBubble(
+                                isUser: message.senderId == widget.userId,
+                                message: message.message,
+                                file: message.file,
+                                fileName: message.fileName,
+                                image: message.image,
+                                filePath: message.filePath,
+                                time: message.time.toString(),
+                                download: downloadState,
+                                onDownloadTap: () async{
+                                  if (downloadState != Download.downloaded && downloadState != Download.downloading) {
+                                   final error = await chatRead.downloadFile(fileUrl, message.fileName!);
+                                   if(error != null)_snackBarService.showSnackBar(message: error);
+                                  }
                                 },
+                                onImageTap: () async{
+                                  if (downloadState == Download.downloaded) {
+                                    final path = await ref.read(fileRepoProvider).openImage(message.fileName!);
+                                    _navigationService.push(ShowImageView(image: path,isDownloaded: true,));
+                                  } else if(message.senderId == widget.userId){
+                                     _navigationService.push(ShowImageView(image: message.filePath,isUser: true,));
+                                  }
+                                  _navigationService.push(ShowImageView(image: message.image));
+                                },
+                                onFileTap: () async {
+                                  if (downloadState == Download.downloaded) {
+                                    await ref.read(fileRepoProvider).openFile(message.fileName!);
+                                  } else if(message.senderId == widget.userId){
+                                    await ref.read(fileRepoProvider).openFilex(message.filePath!);
+                                  } else {
+                                    _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
+                                  }
+                                },
+                              );
+                            },
+                          );
+                        }
+                      }
+
+                      return ChatBubble(
+                        isUser: message.senderId == widget.userId,
+                        message: message.message,
+                        file: null,
+                        fileName: null,
+                        image: null,
+                        filePath: null,
+                        time: message.time.toString(),
+                        download: Download.download,
+                        onDownloadTap: null,
+                        onImageTap: null,
+                        onFileTap: null,
+                      );
+                    },
                               ),
                             ),
                           ),

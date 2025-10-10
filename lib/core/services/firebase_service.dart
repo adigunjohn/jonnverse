@@ -94,14 +94,14 @@ class FirebaseService {
         receiverId: message.receiverId,
         receiverName: message.receiverName,
         receiverMail: message.receiverMail,
-        lastMessage: message.message ?? message.fileName!,
+        lastMessage: message.message != null && message.message != '' ?  message.message! : message.fileName!,
         timestamp: message.time,
     );
     final metadataReceiver = Metadata(
       receiverId: message.senderId,
       receiverName: message.senderName,
       receiverMail: message.senderMail,
-      lastMessage: message.message ?? message.fileName!,
+      lastMessage: message.message != null && message.message != '' ?  message.message! : message.fileName!,
       timestamp: message.time,
     );
     await userChatsCollection.doc(message.senderId).collection('users').doc(message.receiverId).set(metadataSender.toJson(),SetOptions(merge: true));

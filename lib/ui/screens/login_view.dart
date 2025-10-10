@@ -141,7 +141,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             _dialogService.showAlertDialog(context, title: AppStrings.authError,subtitle: message.$1);
                           }
                           else{
-                            ref.read(userProvider.notifier).updateUser(message.$2!);
+                            await ref.read(userProvider.notifier).updateUser(message.$2!);
                             _navigationService.pushNamed(NavView.id);
                             _emailController.clear();
                             _passwordController.clear();

@@ -1,15 +1,20 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jonnverse/app/config/locator.dart';
+import 'package:jonnverse/core/enums/download.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
 import 'package:jonnverse/core/models/metadata.dart';
 import 'package:jonnverse/core/repos/chat_repo.dart';
+import 'package:jonnverse/core/repos/connectivity_repo.dart';
+import 'package:jonnverse/core/repos/file_repo.dart';
 import 'package:jonnverse/core/services/file_picker_service.dart';
-import 'package:jonnverse/providers/auth_notifier.dart';
+import 'package:jonnverse/providers/user_notifier.dart';
+import 'package:jonnverse/ui/common/strings.dart';
 
 class ChatIds {
   final String senderId;
@@ -37,6 +42,7 @@ class ChatIds {
 }
 
 final chatRepoProvider = Provider<ChatRepo>((ref) => locator<ChatRepo>());
+final fileRepoProvider = Provider<FileRepo>((ref) => locator<FileRepo>());
 
 final chatMessagesStreamProvider = StreamProvider.family<List<JMessage>, ChatIds>((ref, ids) {
   final repo = ref.watch(chatRepoProvider);
@@ -45,8 +51,8 @@ final chatMessagesStreamProvider = StreamProvider.family<List<JMessage>, ChatIds
 
 final allChatsStreamProvider = StreamProvider<List<Metadata>>((ref){
   final repo = ref.watch(chatRepoProvider);
-  final auth = ref.watch(authProvider);
-  final userId = auth.user?.uid;
+  final user = ref.watch(userProvider);
+  final userId = user.user?.uid;
   if (userId == null) {
     log('[Chats Notifier] User uid provided is null, returning empty list');
     return Stream.value(<Metadata>[]);
@@ -62,19 +68,21 @@ final allChatsStreamProvider = StreamProvider<List<Metadata>>((ref){
 
 
 class ChatState{
+  final Map<String, Download> downloadStates;
   final String? filePath;
   final String? fileName;
   final bool isLoading;
   final bool isImagePicked;
   final bool isFilePicked;
-  ChatState({this.filePath, this.fileName, this.isLoading = false, this.isFilePicked = false, this.isImagePicked = false});
- ChatState copyWith({String? filePath, String? fileName, bool? isLoading, bool? isImagePicked, bool? isFilePicked}){
+  ChatState({this.downloadStates = const {}, this.filePath, this.fileName, this.isLoading = false, this.isFilePicked = false, this.isImagePicked = false,});
+ ChatState copyWith({String? filePath, String? fileName, bool? isLoading, bool? isImagePicked, bool? isFilePicked, Map<String, Download>? downloadStates,}){
     return ChatState(
       filePath: filePath ?? this.filePath,
       fileName: fileName ?? this.fileName,
       isLoading: isLoading ?? this.isLoading,
       isImagePicked: isImagePicked ?? this.isImagePicked,
       isFilePicked: isFilePicked ?? this.isFilePicked,
+      downloadStates: downloadStates ?? this.downloadStates,
     );
   }
 }
@@ -82,6 +90,8 @@ class ChatState{
 class ChatNotifier extends Notifier<ChatState> {
   final ChatRepo _chatRepo = locator<ChatRepo>();
   final FilePickerService _filePickerService = locator<FilePickerService>();
+  final FileRepo _fileRepo = locator<FileRepo>();
+  final ConnectivityRepo _connectivityRepo = locator<ConnectivityRepo>();
 
   @override
   ChatState build() => ChatState();
@@ -102,7 +112,8 @@ class ChatNotifier extends Notifier<ChatState> {
           time: message.time,
           message: message.message,
           fileName: state.fileName,
-          image: imageUrl
+          image: imageUrl,
+          filePath: state.filePath,
         );
       } else if(state.isFilePicked && state.filePath != null){
         final fileUrl = await _chatRepo.uploadFile(filename: state.fileName!, file: File(state.filePath!));
@@ -116,7 +127,8 @@ class ChatNotifier extends Notifier<ChatState> {
           time: message.time,
           message: message.message,
           file: fileUrl,
-          fileName: state.fileName
+          fileName: state.fileName,
+          filePath: state.filePath,
         );
       }
       await _chatRepo.sendMessage(message: jmessage ?? message);
@@ -165,6 +177,39 @@ class ChatNotifier extends Notifier<ChatState> {
       }
     });
   }
+
+  Future<String?> downloadFile(String fileUrl, String filename,{ProgressCallback? onProgress, CancelToken? cancelToken,})async{
+    if(await _connectivityRepo.hasInternet() == false){
+      final newStates = Map<String, Download>.from(state.downloadStates);
+      newStates[fileUrl] = Download.failed;
+      state = state.copyWith(downloadStates: newStates);
+        return AppStrings.noInternet;
+    }
+    final newStates = Map<String, Download>.from(state.downloadStates);
+    newStates[fileUrl] = Download.downloading;
+    state = state.copyWith(downloadStates: newStates);
+    try{
+      _fileRepo.downloadFile(fileUrl, filename, onProgress: onProgress, cancelToken: cancelToken);
+      final finalStates = Map<String, Download>.from(state.downloadStates);
+      finalStates[fileUrl] = Download.downloaded;
+      state = state.copyWith(downloadStates: finalStates);
+      return null;
+    }catch(e){
+      final finalStates = Map<String, Download>.from(state.downloadStates);
+      finalStates[fileUrl] = Download.failed;
+      state = state.copyWith(downloadStates: finalStates);
+      return e.toString().replaceFirst('Exception: ', '');
+    }
+  }
+
+  Future<bool> doesFileExist(String fileName) async {
+    return await _fileRepo.fileExists(fileName);
+  }
+
+  Future<String> getImageDownloadedPather(String fileName) async {
+    return await _fileRepo.openImage(fileName);
+  }
+
 }
  //final chatNotifierProvider = NotifierProvider<ChatNotifier, bool>(() => ChatNotifier());
  final chatNotifierProvider = NotifierProvider<ChatNotifier, ChatState>(ChatNotifier.new);

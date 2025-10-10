@@ -24,6 +24,15 @@ class UserRepo{
     }
   }
 
+  Future<void> updateUserLocally(User value)async{
+    try{
+      await _hiveService.updateUser(user: value);
+      log('${AppStrings.userRepoLog}user updated successfully ${value.toString()}');
+    }catch(e){
+      log('${AppStrings.userRepoLog}failed to update user on hive: $e');
+      throw Exception('${AppStrings.userRepoLog}failed to update user details');
+    }
+  }
   Future<User> updateUser(String id, User value)async{
     try{
       await _firebaseService.saveUser(id, value, merge: true);
