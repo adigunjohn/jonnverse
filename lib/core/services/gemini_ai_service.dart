@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:jonnverse/core/models/jmessages.dart';
 import 'package:mime/mime.dart';
 
 class GeminiAIService {
@@ -31,17 +32,9 @@ class GeminiAIService {
     final chat = model.startChat(history: conversationHistory);
     final content = Content.text(prompt);
 
-    try {
-      final response = await chat.sendMessage(content);
-      log('Gemini API Response: ${response.text}');
-      return response.text;
-    } on GenerativeAIException catch (e) {
-      log('GenerativeAIException : $e');
-      return 'Error from Gemini: ${e.message}';
-    } catch (e) {
-      log('Unknown error in Gemini API: $e');
-      return 'An unknown error occurred.';
-    }
+    final response = await chat.sendMessage(content);
+    log('Gemini API Response: ${response.text}');
+    return response.text;
   }
 
   Future<String?> geminiGenerateWithTextAndImage(
@@ -63,17 +56,9 @@ class GeminiAIService {
     parts.add(DataPart(imageMimeType, imageBytes));
     final content = Content.multi(parts);
 
-    try {
-      final response = await chat.sendMessage(content);
-      log('Gemini API Response: ${response.text}');
-      return response.text;
-    } on GenerativeAIException catch (e) {
-      log('GenerativeAIException: $e');
-      return 'Error from Gemini: ${e.message}';
-    } catch (e) {
-      log('Unknown error in Gemini API: $e');
-      return 'An unknown error occurred.';
-    }
+    final response = await chat.sendMessage(content);
+    log('Gemini API Response: ${response.text}');
+    return response.text;
   }
 
 
@@ -96,17 +81,9 @@ class GeminiAIService {
     parts.add(DataPart(fileMimeType, fileBytes));
     final content = Content.multi(parts);
 
-    try {
-      final response = await chat.sendMessage(content);
-      log('Gemini API Response: ${response.text}');
-      return response.text;
-    } on GenerativeAIException catch (e) {
-      log('GenerativeAIException: $e');
-      return 'Error from Gemini: ${e.message}';
-    } catch (e) {
-      log('Unknown error in Gemini API: $e');
-      return 'An unknown error occurred.';
-    }
+    final response = await chat.sendMessage(content);
+    log('Gemini API Response: ${response.text}');
+    return response.text;
   }
 
 
@@ -139,14 +116,14 @@ class GeminiAIService {
   }
 
 
-  Future<List<Content>> convertMessagesToContentHistory(List<Message> messages) async {
+  Future<List<Content>> convertMessagesToContentHistory(List<JMessage> messages, String userMail) async {
     log('Fetching history started');
     List<Content> history = [];
     for (final message in messages) {
       List<Part> parts = [];
-      if(message.text != 'Hi! I\'m Gemini.\nHow can I help you?') {
-        if (message.text != null && message.text!.trim().isNotEmpty) {
-          parts.add(TextPart(message.text!));
+      if(message.message != 'Hi! I\'m Gemini.\nHow can I help you?') {
+        if (message.message != null && message.message!.trim().isNotEmpty) {
+          parts.add(TextPart(message.message!));
         }
 
         if (message.image != null) {
@@ -190,17 +167,17 @@ class GeminiAIService {
         }
 
         if (parts.isNotEmpty) {
-          if (message.isUser) {
+          if (message.senderMail == userMail) {
             history.add(Content('user', parts));
           } else {
             history.add(Content('model', parts));
           }
         } else {
-          log('Skipping message in history conversion (no valid parts): ${message.text?.substring(0, 20) ?? "Media message"}');
+          log('Skipping message in history conversion (no valid parts): ${message.message?.substring(0, 20) ?? "Media message"}');
         }
       }
       else{
-        log('skipped the first pre-added message: ${message.text}');
+        log('skipped the first pre-added message: ${message.message}');
       }
 
     }

@@ -1,11 +1,13 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/core/enums/download.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
 import 'package:jonnverse/core/models/metadata.dart';
 import 'package:jonnverse/core/services/firebase_service.dart';
+import 'package:jonnverse/core/services/gemini_ai_service.dart';
 import 'package:jonnverse/core/services/hive_service.dart';
 import 'package:jonnverse/core/services/supabase_service.dart';
 import 'package:jonnverse/ui/common/strings.dart';
@@ -15,6 +17,7 @@ class ChatRepo{
   final FirebaseService _firebaseService = locator<FirebaseService>();
   final SupabaseService _supabaseService = locator<SupabaseService>();
   final HiveService _hiveService = locator<HiveService>();
+  final GeminiAIService _geminiAIService = locator<GeminiAIService>();
 
 
   String sortAndJoin(String id1, String id2) {
@@ -58,16 +61,19 @@ class ChatRepo{
   Future<void> receiveMessageFromAI({required JMessage message}) async{
     final chatId = sortAndJoin(message.senderId, message.receiverId);
     try{
-      await _firebaseService.sendMessageToAI(chatId, message);
-      log('${AppStrings.chatRepoLog}Message sent to ${message.receiverName} successfully');
+      await sendMessageToAI(message: message);
+      log('${AppStrings.chatRepoLog}Message received from ${message.receiverName} successfully');
     }
     on FirebaseException catch(e){
       log('${AppStrings.chatRepoLog}Firebase Error sending message to ${message.receiverName}: ${e.code} - ${e.message}');
-      throw Exception('Failed to send message to ${message.receiverName}. Please try again.');
+      throw Exception('Failed to get response from ${message.receiverName}. Please try again.');
+    } on GenerativeAIException catch(e){
+      log('${AppStrings.chatRepoLog}GenerativeAI Error sending message to ${message.receiverName}: ${e.message}');
+      throw Exception('Failed to get response from ${message.receiverName}. Please try again.');
     }
     catch(e){
       log('${AppStrings.chatRepoLog}Error sending message to ${message.receiverName}: $e');
-      throw Exception('Failed to send message to ${message.receiverName}. Please try again.');
+      throw Exception('Failed to get response from ${message.receiverName}. Please try again.');
     }
   }
 
