@@ -1,10 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/core/enums/download.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
@@ -79,8 +76,8 @@ class ChatRepo{
       }
       if(response == null)log('${AppStrings.chatRepoLog} response from Gemini is null');
       JMessage aiResponse = JMessage(
-          senderId: message.senderId, senderName: message.senderName, senderMail: message.senderMail,message: response ?? 'Sorry, I couldn\'t process that.',
-          receiverId: message.receiverId, receiverName: message.receiverName, receiverMail: message.receiverMail, time: message.time);
+          senderId: message.receiverId, senderName: message.receiverName, senderMail: message.receiverMail,message: response ?? 'Sorry, I couldn\'t process that.',
+          receiverId: message.senderId, receiverName: message.senderName, receiverMail: message.senderMail, time: DateTime.now());
       await sendMessageToAI(message: aiResponse);
       log('${AppStrings.chatRepoLog}Message received from ${message.receiverName} successfully');
       return response;
@@ -93,7 +90,7 @@ class ChatRepo{
       throw Exception('Failed to get response from ${message.receiverName}. Please try again.');
     }
     catch(e){
-      log('${AppStrings.chatRepoLog}Error sending message to ${message.receiverName}: $e');
+      log('${AppStrings.chatRepoLog}Error getting response from ${message.receiverName}: $e');
       throw Exception('Failed to get response from ${message.receiverName}. Please try again.');
     }
   }

@@ -1,10 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:mime/mime.dart';

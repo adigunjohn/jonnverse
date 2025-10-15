@@ -262,7 +262,7 @@ class ChatNotifier extends Notifier<ChatState> {
       final historySnapshot = await ref.read(chatMessagesStreamProvider(chatIds).future);
       await _chatRepo.receiveMessageFromAI(
         message: message,
-        file: File(state.filePath!),
+        file: state.filePath != null ? File(state.filePath!) : null,
         messages: historySnapshot,
       );
       clearFile();

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,7 +17,6 @@ import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
 import 'package:jonnverse/ui/custom_widgets/chat_bubble.dart';
 import 'package:jonnverse/ui/custom_widgets/chat_field.dart';
-import 'package:jonnverse/ui/custom_widgets/progress_indicator.dart';
 import 'package:jonnverse/ui/screens/show_image_view.dart';
 
 class GeminiChatView extends ConsumerStatefulWidget {
@@ -106,7 +107,7 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
                   child: Row(
                     children: [
-                      CircularProgressIndicator(color: kCAccentColor),
+                      SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: kCAccentColor)),
                       const SizedBox(width: 10),
                       Text("Gemini is thinking...", style: Theme.of(context).textTheme.bodySmall),
                     ],
@@ -155,6 +156,7 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
                                     if (chatProvider.downloadStates.containsKey(fileUrl)) {
                                       downloadState = chatProvider.downloadStates[fileUrl]!;
                                       return ChatBubble(
+                                        isAI: message.senderId == AppStrings.geminiUID,
                                         isUser: message.senderId == widget.userId,
                                         message: message.message,
                                         file: message.file,
@@ -198,6 +200,7 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
                                             downloadState = Download.downloaded;
                                           }
                                           return ChatBubble(
+                                            isAI: message.senderId == AppStrings.geminiUID,
                                             isUser: message.senderId == widget.userId,
                                             message: message.message,
                                             file: message.file,
@@ -230,13 +233,16 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
                                                 _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
                                               }
                                             },
+                                            onMessagePress: (){
+                                              log('message: long press in action');
+                                            },
                                           );
                                         },
                                       );
                                     }
                                   }
-
                                   return ChatBubble(
+                                    isAI: message.senderId == AppStrings.geminiUID,
                                     isUser: message.senderId == widget.userId,
                                     message: message.message,
                                     file: null,
@@ -248,6 +254,9 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
                                     onDownloadTap: null,
                                     onImageTap: null,
                                     onFileTap: null,
+                                    onMessagePress: (){
+                                      log('message: long press in action');
+                                    },
                                   );
                                 },
                               ),
@@ -291,6 +300,7 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
                     ).then((error){
                       if(error != null){
                         _snackBarService.showSnackBar(message: error);
+                        _controller.clear();
                       } else {
                         _controller.clear();
                       }

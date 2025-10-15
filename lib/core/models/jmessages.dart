@@ -62,4 +62,8 @@ class JMessage {
     );
   }
 
+  @override
+  String toString() {
+    return 'JMessage{message: $message, senderId: $senderId, senderName: $senderName, senderMail: $senderMail, receiverId: $receiverId, receiverName: $receiverName, receiverMail: $receiverMail, time: $time, file: $file, fileName: $fileName, image: $image, filePath: $filePath}';
+  }
 }

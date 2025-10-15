@@ -14,6 +14,7 @@ import 'package:jonnverse/core/services/hive_service.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/core/services/snackbar_service.dart';
 import 'package:jonnverse/core/services/supabase_service.dart';
+import 'package:jonnverse/core/services/gemini_ai_service.dart';
 
 GetIt locator = GetIt.instance;
 void setupLocator(){
@@ -27,6 +28,7 @@ void setupLocator(){
   locator.registerLazySingleton(() => ConnectivityService());
   locator.registerLazySingleton(() => DialogService());
   locator.registerLazySingleton(() => FileService());
+  locator.registerLazySingleton(() => GeminiAIService());
   //Repos
   locator.registerLazySingleton(() => ThemeRepo());
   locator.registerLazySingleton(() => AuthRepo());

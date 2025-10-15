@@ -65,8 +65,9 @@ class UserRepo{
     }
   }
 
-  Future<User> getOtherUsersDetails(String id) async{
+  Future<User?> getOtherUsersDetails(String id) async{
     try{
+      if(id == AppStrings.geminiUID) return null;
       final user = await _firebaseService.getUserDetails(id);
       return user;
     }catch(e){

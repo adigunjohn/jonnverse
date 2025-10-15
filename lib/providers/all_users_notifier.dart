@@ -15,7 +15,7 @@ final allUsersStreamProvider = StreamProvider<List<User>>((ref){
   return repo.getAllUsers(userEmail);
 });
 
-final otherUserFutureProvider = FutureProvider.family<User,String>((ref, id) {
+final otherUserFutureProvider = FutureProvider.family<User?,String>((ref, id) {
   final repo = ref.watch(userRepoProvider);
   return repo.getOtherUsersDetails(id);
 });

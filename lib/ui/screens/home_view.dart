@@ -48,7 +48,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
           borderRadius: BorderRadius.circular(30),
         ),
         onPressed: () {
-          _navigationService.pushNamed(GeminiChatView.id);
+          _navigationService.push(GeminiChatView(
+            userMail: sender.user?.email,
+            userName: sender.user?.name,
+            userId: sender.user?.uid,
+          ));
         },
         child: Icon(CupertinoIcons.sparkles,color: kCOnAccentColor, size: fabIconSize,),
       ),
@@ -124,7 +128,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             itemBuilder: (context, index){
                               final chat = allChats[index];
                               final otherUser = ref.watch(otherUserFutureProvider(chat.receiverId));
-                              // log(otherUser.toString());
 
                               return ChatTile(
                                 isAI: chat.receiverId == AppStrings.geminiUID,
@@ -132,13 +135,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                 lastMessage: chat.lastMessage,
                                 // lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
                                 badgeCount: 7,
-                                userDp: otherUser.value?.profilePic,
+                                userDp: chat.receiverId == AppStrings.geminiUID ? null : otherUser.value?.profilePic,
                                 userName: chat.receiverName,
                                 onTap: (){
                                   if(chat.receiverId == AppStrings.geminiUID){
                                     _navigationService.push(GeminiChatView(
                                       userMail: sender.user?.email,
                                       userName: sender.user?.name,
+                                      userId: sender.user?.uid,
                                     ));
                                   }
                                   else{

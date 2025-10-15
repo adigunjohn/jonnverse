@@ -106,7 +106,7 @@ class ChatField extends StatelessWidget {
                     color: kCBlueShadeColor,
                     shape: BoxShape.circle,
                   ),
-                  child: Center(child: CircularProgressIndicator(color: kCWhiteColor,)),
+                  child: Center(child: SizedBox(height: 23, width: 23, child: CircularProgressIndicator(color: kCWhiteColor,))),
                 ) else GestureDetector(
                   onTap: sendTap,
                   child: Container(

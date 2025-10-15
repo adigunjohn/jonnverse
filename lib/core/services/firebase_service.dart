@@ -110,14 +110,27 @@ class FirebaseService {
 
   Future<void> sendMessageToAI(String chatId, JMessage message,)async{
     await chatsCollection.doc(chatId).collection('messages').add(message.toJson());
-    final metadataSender = Metadata(
-      receiverId: message.receiverId,
-      receiverName: message.receiverName,
-      receiverMail: message.receiverMail,
-      lastMessage: message.message != null && message.message != '' ?  message.message! : message.fileName!,
-      timestamp: message.time,
-    );
-    await userChatsCollection.doc(message.senderId).collection('users').doc(message.receiverId).set(metadataSender.toJson(),SetOptions(merge: true));
+    if(message.senderId != AppStrings.geminiUID){
+      final metadataSender = Metadata(
+        receiverId: message.receiverId,
+        receiverName: message.receiverName,
+        receiverMail: message.receiverMail,
+        lastMessage: message.message != null && message.message != '' ?  message.message! : message.fileName!,
+        timestamp: message.time,
+      );
+      await userChatsCollection.doc(message.senderId).collection('users').doc(message.receiverId).set(metadataSender.toJson(),SetOptions(merge: true));
+    }
+    else if(message.senderId == AppStrings.geminiUID){
+      final metadataSender = Metadata(
+        receiverId: message.senderId,
+        receiverName: message.senderName,
+        receiverMail: message.senderMail,
+        lastMessage: message.message != null && message.message != '' ?  message.message! : message.fileName!,
+        timestamp: message.time,
+      );
+      await userChatsCollection.doc(message.receiverId).collection('users').doc(message.senderId).set(metadataSender.toJson(),SetOptions(merge: true));
+    }
+
   }
 
   // Future<bool> collectionExists(String chatId) async {
