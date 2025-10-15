@@ -8,8 +8,9 @@ import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
 
 class ChatBubble extends StatelessWidget {
-  const ChatBubble({super.key,this.downloadedImageFilePath, this.filePath, this.onFileTap, this.onDownloadTap, required this.isUser, this.onImageTap, this.message, this.file, this.image,required this.time, this.fileName, this.download});
+  const ChatBubble({super.key,this.isLoading = false, this.downloadedImageFilePath, this.filePath, this.onFileTap, this.onDownloadTap, required this.isUser, this.onImageTap, this.message, this.file, this.image,required this.time, this.fileName, this.download});
   final bool isUser;
+  final bool isLoading;
   final Download? download;
   final String? message;
   final String? file;

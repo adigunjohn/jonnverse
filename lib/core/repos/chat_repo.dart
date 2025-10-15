@@ -55,6 +55,22 @@ class ChatRepo{
     }
   }
 
+  Future<void> receiveMessageFromAI({required JMessage message}) async{
+    final chatId = sortAndJoin(message.senderId, message.receiverId);
+    try{
+      await _firebaseService.sendMessageToAI(chatId, message);
+      log('${AppStrings.chatRepoLog}Message sent to ${message.receiverName} successfully');
+    }
+    on FirebaseException catch(e){
+      log('${AppStrings.chatRepoLog}Firebase Error sending message to ${message.receiverName}: ${e.code} - ${e.message}');
+      throw Exception('Failed to send message to ${message.receiverName}. Please try again.');
+    }
+    catch(e){
+      log('${AppStrings.chatRepoLog}Error sending message to ${message.receiverName}: $e');
+      throw Exception('Failed to send message to ${message.receiverName}. Please try again.');
+    }
+  }
+
   Future<String> uploadFile({required String filename, required File file}) async{
     try{
       final url = await _supabaseService.uploadFile(file, 'chats/$filename');

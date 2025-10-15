@@ -72,14 +72,16 @@ class ChatState{
   final String? filePath;
   final String? fileName;
   final bool isLoading;
+  final bool isGeminiLoading;
   final bool isImagePicked;
   final bool isFilePicked;
-  ChatState({this.downloadStates = const {}, this.filePath, this.fileName, this.isLoading = false, this.isFilePicked = false, this.isImagePicked = false,});
- ChatState copyWith({String? filePath, String? fileName, bool? isLoading, bool? isImagePicked, bool? isFilePicked, Map<String, Download>? downloadStates,}){
+  ChatState({this.downloadStates = const {}, this.filePath, this.fileName, this.isLoading = false, this.isGeminiLoading = false, this.isFilePicked = false, this.isImagePicked = false,});
+ ChatState copyWith({String? filePath, String? fileName, bool? isLoading, bool? isGeminiLoading, bool? isImagePicked, bool? isFilePicked, Map<String, Download>? downloadStates,}){
     return ChatState(
       filePath: filePath ?? this.filePath,
       fileName: fileName ?? this.fileName,
       isLoading: isLoading ?? this.isLoading,
+      isGeminiLoading: isGeminiLoading ?? this.isGeminiLoading,
       isImagePicked: isImagePicked ?? this.isImagePicked,
       isFilePicked: isFilePicked ?? this.isFilePicked,
       downloadStates: downloadStates ?? this.downloadStates,
@@ -212,6 +214,54 @@ class ChatNotifier extends Notifier<ChatState> {
 
   Future<String> getImageDownloadedPath(String fileName) async {
     return await _fileRepo.openImage(fileName);
+  }
+
+  Future<String?> sendMessageToAI(ScrollController scrollController, {required JMessage message}) async {
+    state = state.copyWith(isLoading: true);
+    JMessage? jmessage;
+    try {
+      if(state.isImagePicked && state.filePath != null){
+        final imageUrl = await _chatRepo.uploadFile(filename: state.fileName!, file: File(state.filePath!));
+        jmessage = JMessage(
+          senderId: message.senderId,
+          senderName: message.senderName,
+          senderMail: message.senderMail,
+          receiverId: message.receiverId,
+          receiverName: message.receiverName,
+          receiverMail: message.receiverMail,
+          time: message.time,
+          message: message.message,
+          fileName: state.fileName,
+          image: imageUrl,
+          filePath: state.filePath,
+        );
+      } else if(state.isFilePicked && state.filePath != null){
+        final fileUrl = await _chatRepo.uploadFile(filename: state.fileName!, file: File(state.filePath!));
+        jmessage = JMessage(
+          senderId: message.senderId,
+          senderName: message.senderName,
+          senderMail: message.senderMail,
+          receiverId: message.receiverId,
+          receiverName: message.receiverName,
+          receiverMail: message.receiverMail,
+          time: message.time,
+          message: message.message,
+          file: fileUrl,
+          fileName: state.fileName,
+          filePath: state.filePath,
+        );
+      }
+      await _chatRepo.sendMessage(message: jmessage ?? message);
+      clearFile();
+      scrollToBottom(scrollController);
+      log('Message sent to ${message.receiverName} successfully');
+      return null;
+    } catch (e) {
+      log('Error sending message to ${message.receiverName}: $e');
+      return e.toString().replaceFirst('Exception: ', '');
+    }finally{
+      state = state.copyWith(isLoading: false);
+    }
   }
 
 }

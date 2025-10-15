@@ -37,7 +37,8 @@ class FileRepo {
 
   Future<OpenResult> openFilex(String filePath) async {
     try {
-      final openfile = await _fileService.openFile(filePath);
+     // final openfile = await _fileService.openFile(filePath);
+      final openfile = await _fileService.openFilex(filePath);
       log('${AppStrings.fileRepoLog}File opened successfully',);
       return openfile;
     }catch(e){
