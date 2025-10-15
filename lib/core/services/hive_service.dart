@@ -13,12 +13,14 @@ class HiveService{
     await Hive.openBox<ThemeMode>(AppStrings.themeKey);
     await Hive.openBox<User?>(AppStrings.userKey);
     await Hive.openBox<bool>(AppStrings.loggedInKey);
+    await Hive.openBox<String>(AppStrings.downloadKey);
     log('${AppStrings.hiveServiceLog}hive successfully initialized');
   }
 
   static Box<ThemeMode> themeBox = Hive.box(AppStrings.themeKey);
   static Box<User?> userBox = Hive.box(AppStrings.userKey);
   static Box<bool> loggedInBox = Hive.box(AppStrings.loggedInKey);
+  static Box<String> downloadBox = Hive.box(AppStrings.downloadKey);
 
   //For Theme
     ThemeMode? getThemeMode() => themeBox.get(AppStrings.themeKey, defaultValue: ThemeMode.system);
@@ -57,6 +59,22 @@ class HiveService{
   Future<void> clearLoggedInStorage() async {
       await loggedInBox.clear();
       log('${AppStrings.hiveServiceLog}user box has been cleared');
+  }
+
+  //For download states
+  Map<String,String> getDownloadStates(){
+    final downloadStates = downloadBox.toMap().cast<String, String>();
+    return downloadStates;
+  }
+
+  Future<void> updateDownloadStates({required String urlKey, required String downloadState}) async {
+    await downloadBox.put(urlKey,downloadState);
+    log('${AppStrings.hiveServiceLog}$urlKey updated to $downloadState');
+  }
+
+  Future<void> clearDownloadStorage() async {
+    await downloadBox.clear();
+    log('${AppStrings.hiveServiceLog}download states box has been cleared');
   }
 
   // void updateMessageList({required List<Message> messages, required Box<Message> box}) {

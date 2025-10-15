@@ -42,6 +42,7 @@ class AppStrings{
   static const String noMessages = 'No messages yet.';
   static const String geminiFromGoogle = 'Gemini from Google LLC';
   static const String gemini = 'Gemini';
+  static const String geminiUID = 'gemini';
   static const String errorGettingChats = 'Failed to fetch all available chats';
 
   //UserView
@@ -53,6 +54,7 @@ class AppStrings{
   static const String typeMessage = 'Type a message';
   static const String errorGettingMessages = 'Failed to fetch chat messages';
   static const String startConversation = 'Start a conversation';
+  static const String startConversationWithGemini = 'Start a conversation with Gemini';
   static const String pickImage = 'Pick Image';
   static const String pickImageSub = 'Select image from';
 
@@ -105,6 +107,7 @@ class AppStrings{
   //Hive
   static const String themeKey = 'ThemeKey';
   static const String userKey = 'UserKey';
+  static const String downloadKey = 'DownloadKey';
   static const String loggedInKey = 'LoggedInKey';
 }
 

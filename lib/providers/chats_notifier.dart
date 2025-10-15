@@ -94,7 +94,7 @@ class ChatNotifier extends Notifier<ChatState> {
   final ConnectivityRepo _connectivityRepo = locator<ConnectivityRepo>();
 
   @override
-  ChatState build() => ChatState();
+  ChatState build() => ChatState(downloadStates: _chatRepo.getDownloadStatesFromLocalStorage());
 
   Future<String?> sendMessage(ScrollController scrollController, {required JMessage message}) async {
     state = state.copyWith(isLoading: true);
@@ -183,21 +183,25 @@ class ChatNotifier extends Notifier<ChatState> {
       final newStates = Map<String, Download>.from(state.downloadStates);
       newStates[fileUrl] = Download.failed;
       state = state.copyWith(downloadStates: newStates);
+      await _chatRepo.updateDownloadStatesToLocalStorage(urlKey: fileUrl, downloadState: Download.failed.name);
         return AppStrings.noInternet;
     }
     final newStates = Map<String, Download>.from(state.downloadStates);
     newStates[fileUrl] = Download.downloading;
     state = state.copyWith(downloadStates: newStates);
+    await _chatRepo.updateDownloadStatesToLocalStorage(urlKey: fileUrl, downloadState: Download.downloading.name);
     try{
       _fileRepo.downloadFile(fileUrl, filename, onProgress: onProgress, cancelToken: cancelToken);
       final finalStates = Map<String, Download>.from(state.downloadStates);
       finalStates[fileUrl] = Download.downloaded;
       state = state.copyWith(downloadStates: finalStates);
+      await _chatRepo.updateDownloadStatesToLocalStorage(urlKey: fileUrl, downloadState: Download.downloaded.name);
       return null;
     }catch(e){
       final finalStates = Map<String, Download>.from(state.downloadStates);
       finalStates[fileUrl] = Download.failed;
       state = state.copyWith(downloadStates: finalStates);
+      await _chatRepo.updateDownloadStatesToLocalStorage(urlKey: fileUrl, downloadState: Download.failed.name);
       return e.toString().replaceFirst('Exception: ', '');
     }
   }
@@ -206,10 +210,19 @@ class ChatNotifier extends Notifier<ChatState> {
     return await _fileRepo.fileExists(fileName);
   }
 
-  Future<String> getImageDownloadedPather(String fileName) async {
+  Future<String> getImageDownloadedPath(String fileName) async {
     return await _fileRepo.openImage(fileName);
   }
 
 }
  //final chatNotifierProvider = NotifierProvider<ChatNotifier, bool>(() => ChatNotifier());
  final chatNotifierProvider = NotifierProvider<ChatNotifier, ChatState>(ChatNotifier.new);
+
+
+
+
+
+//// Use addPostFrameCallback to ensure the notifier is built before you call it.
+// WidgetsBinding.instance.addPostFrameCallback((_) {
+//   ref.read(chatNotifierProvider.notifier).initStateFromStorage();
+// });

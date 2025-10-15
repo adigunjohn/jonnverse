@@ -125,7 +125,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
                               final chat = allChats[index];
                               final otherUser = ref.watch(otherUserFutureProvider(chat.receiverId));
                               // log(otherUser.toString());
+
                               return ChatTile(
+                                isAI: chat.receiverId == AppStrings.geminiUID,
                                 time: formatTimeStamp(chat.timestamp.toString()),
                                 lastMessage: chat.lastMessage,
                                 // lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
@@ -133,15 +135,23 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                 userDp: otherUser.value?.profilePic,
                                 userName: chat.receiverName,
                                 onTap: (){
-                                  _navigationService.push(ChatView(
-                                    userId: sender.user?.uid,
-                                    receiverName: chat.receiverName,
-                                    receiverMail: chat.receiverMail,
-                                    receiverId: chat.receiverId,
-                                    userMail: sender.user?.email,
-                                    userName: sender.user?.name,
-                                    receiverDp: otherUser.value?.profilePic,
-                                  ));
+                                  if(chat.receiverId == AppStrings.geminiUID){
+                                    _navigationService.push(GeminiChatView(
+                                      userMail: sender.user?.email,
+                                      userName: sender.user?.name,
+                                    ));
+                                  }
+                                  else{
+                                    _navigationService.push(ChatView(
+                                      userId: sender.user?.uid,
+                                      receiverName: chat.receiverName,
+                                      receiverMail: chat.receiverMail,
+                                      receiverId: chat.receiverId,
+                                      userMail: sender.user?.email,
+                                      userName: sender.user?.name,
+                                      receiverDp: otherUser.value?.profilePic,
+                                    ));
+                                  }
                                 },
                               );
                             }),

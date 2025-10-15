@@ -2,9 +2,11 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jonnverse/app/config/locator.dart';
+import 'package:jonnverse/core/enums/download.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
 import 'package:jonnverse/core/models/metadata.dart';
 import 'package:jonnverse/core/services/firebase_service.dart';
+import 'package:jonnverse/core/services/hive_service.dart';
 import 'package:jonnverse/core/services/supabase_service.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -12,6 +14,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class ChatRepo{
   final FirebaseService _firebaseService = locator<FirebaseService>();
   final SupabaseService _supabaseService = locator<SupabaseService>();
+  final HiveService _hiveService = locator<HiveService>();
 
 
   String sortAndJoin(String id1, String id2) {
@@ -24,6 +27,22 @@ class ChatRepo{
     final chatId = sortAndJoin(message.senderId, message.receiverId);
     try{
       await _firebaseService.sendMessage(chatId, message);
+      log('${AppStrings.chatRepoLog}Message sent to ${message.receiverName} successfully');
+    }
+    on FirebaseException catch(e){
+      log('${AppStrings.chatRepoLog}Firebase Error sending message to ${message.receiverName}: ${e.code} - ${e.message}');
+      throw Exception('Failed to send message to ${message.receiverName}. Please try again.');
+    }
+    catch(e){
+      log('${AppStrings.chatRepoLog}Error sending message to ${message.receiverName}: $e');
+      throw Exception('Failed to send message to ${message.receiverName}. Please try again.');
+    }
+  }
+
+  Future<void> sendMessageToAI({required JMessage message}) async{
+    final chatId = sortAndJoin(message.senderId, message.receiverId);
+    try{
+      await _firebaseService.sendMessageToAI(chatId, message);
       log('${AppStrings.chatRepoLog}Message sent to ${message.receiverName} successfully');
     }
     on FirebaseException catch(e){
@@ -99,6 +118,30 @@ class ChatRepo{
     }
   }
 
+  Map<String,Download> getDownloadStatesFromLocalStorage(){
+    try{
+      final savedDownloadStates = _hiveService.getDownloadStates();
+      final downloadStates = savedDownloadStates.map((key, value) {
+        final downloadEnum = Download.values.firstWhere(
+              (e) => e.name == value,
+          orElse: () => Download.download,
+        );
+        return MapEntry(key, downloadEnum);
+      });
+      return downloadStates;
+    }catch(e){
+      log('${AppStrings.chatRepoLog}failed to get download states: $e');
+      throw Exception('${AppStrings.chatRepoLog}failed to get download states: $e');
+    }
+  }
 
+  Future<void> updateDownloadStatesToLocalStorage({required String urlKey, required String downloadState})async{
+    try{
+      await _hiveService.updateDownloadStates(urlKey: urlKey, downloadState: downloadState);
+    }catch(e){
+      log('${AppStrings.chatRepoLog}failed to get download states: $e');
+      throw Exception('${AppStrings.chatRepoLog}failed to get download states: $e');
+    }
+  }
 
 }

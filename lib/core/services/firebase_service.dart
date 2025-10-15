@@ -108,6 +108,18 @@ class FirebaseService {
     await userChatsCollection.doc(message.receiverId).collection('users').doc(message.senderId).set(metadataReceiver.toJson(),SetOptions(merge: true));
   }
 
+  Future<void> sendMessageToAI(String chatId, JMessage message,)async{
+    await chatsCollection.doc(chatId).collection('messages').add(message.toJson());
+    final metadataSender = Metadata(
+      receiverId: message.receiverId,
+      receiverName: message.receiverName,
+      receiverMail: message.receiverMail,
+      lastMessage: message.message != null && message.message != '' ?  message.message! : message.fileName!,
+      timestamp: message.time,
+    );
+    await userChatsCollection.doc(message.senderId).collection('users').doc(message.receiverId).set(metadataSender.toJson(),SetOptions(merge: true));
+  }
+
   // Future<bool> collectionExists(String chatId) async {
   //     final chatCollectionRef = await chatsCollection.doc(chatId).get();
   //     final snapshot = chatCollectionRef.exists;
