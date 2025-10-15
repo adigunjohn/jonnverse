@@ -7,6 +7,8 @@ class AppStrings{
   static const String ok = 'Ok';
   static const String retry = 'Retry';
   static const String noInternet = 'No Internet Connection';
+  static const String geminiFlash = 'gemini-2.5-flash';
+  static const String geminiPro =  'gemini-2.5-pro';
 
   //ErrorView
   static const String errorText = 'Something went wrong, this page does not exist';

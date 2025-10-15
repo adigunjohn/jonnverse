@@ -99,223 +99,232 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
           ref.read(chatNotifierProvider.notifier).clearFile();
         },
         child: SafeArea(
-          child: ProgressHud(
-            loading: false,
-            child: Stack(
-              children: [
-                chatMessages.when(
-                    data: (chat) {
-                      if (chat.isEmpty) {
-                        return Center(
-                          child: Text(
-                            AppStrings.startConversationWithGemini,
-                            style: Theme.of(context).textTheme.bodySmall,
-                            maxLines: 2,
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        );
-                      }
-                      return Column(
-                        children: [
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.topCenter,
-                              child: Scrollbar(
-                                radius: Radius.circular(10),
-                                controller: _scrollController,
-                                child: ListView.builder(
-                                  padding: EdgeInsets.only(
-                                    right: 15,
-                                    left: 15,
-                                    bottom: 75,
-                                  ),
-                                  itemCount: chat.length,
-                                  controller: _scrollController,
-                                  reverse: true,
-                                  shrinkWrap: true,
-                                  itemBuilder: (_, index) {
-                                    final message = chat.reversed.toList()[index];
-                                    final chatRead = ref.read(chatNotifierProvider.notifier);
-
-                                    final String? fileUrl = message.file ?? message.image;
-
-                                    if (fileUrl != null) {
-                                      Download downloadState = Download.download;
-
-                                      if (chatProvider.downloadStates.containsKey(fileUrl)) {
-                                        downloadState = chatProvider.downloadStates[fileUrl]!;
-                                        return ChatBubble(
-                                          isUser: message.senderId == widget.userId,
-                                          message: message.message,
-                                          file: message.file,
-                                          fileName: message.fileName,
-                                          image: message.image,
-                                          filePath: message.filePath,
-                                          time: message.time.toString(),
-                                          download: downloadState,
-                                          onDownloadTap: () async{
-                                            if (downloadState != Download.downloaded && downloadState != Download.downloading) {
-                                              final error = await chatRead.downloadFile(fileUrl, message.fileName!);
-                                              if(error != null)_snackBarService.showSnackBar(message: error);
-                                            }
-                                          },
-                                          onImageTap: () async{
-                                            if (downloadState == Download.downloaded) {
-                                              final path = await ref.read(fileRepoProvider).openImage(message.fileName!);
-                                              _navigationService.push(ShowImageView(image: path, isDownloaded: true,));
-                                            } else if(message.senderId == widget.userId){
-                                              _navigationService.push(ShowImageView(image: message.filePath,isUser: true,));
-                                            }
-                                            _navigationService.push(ShowImageView(image: message.image));
-                                          },
-                                          onFileTap: () async {
-                                            if (downloadState == Download.downloaded) {
-                                              await ref.read(fileRepoProvider).openFile(message.fileName!);
-                                            } else if(message.senderId == widget.userId){
-                                              await ref.read(fileRepoProvider).openFilex(message.filePath!);
-                                            } else {
-                                              _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
-                                            }
-                                          },
-                                        );
-                                      } else {
-                                        return FutureBuilder<bool>(
-                                          future: chatRead.doesFileExist(message.fileName!),
-                                          builder: (context, snapshot) {
-                                            if (snapshot.connectionState != ConnectionState.done) {
-                                              downloadState = Download.download;
-                                            } else if (snapshot.data == true) {
-                                              downloadState = Download.downloaded;
-                                            }
-                                            return ChatBubble(
-                                              isUser: message.senderId == widget.userId,
-                                              message: message.message,
-                                              file: message.file,
-                                              fileName: message.fileName,
-                                              image: message.image,
-                                              filePath: message.filePath,
-                                              time: message.time.toString(),
-                                              download: downloadState,
-                                              onDownloadTap: () async{
-                                                if (downloadState != Download.downloaded && downloadState != Download.downloading) {
-                                                  final error = await chatRead.downloadFile(fileUrl, message.fileName!);
-                                                  if(error != null)_snackBarService.showSnackBar(message: error);
-                                                }
-                                              },
-                                              onImageTap: () async{
-                                                if (downloadState == Download.downloaded) {
-                                                  final path = await ref.read(fileRepoProvider).openImage(message.fileName!);
-                                                  _navigationService.push(ShowImageView(image: path,isDownloaded: true,));
-                                                } else if(message.senderId == widget.userId){
-                                                  _navigationService.push(ShowImageView(image: message.filePath,isUser: true,));
-                                                }
-                                                _navigationService.push(ShowImageView(image: message.image));
-                                              },
-                                              onFileTap: () async {
-                                                if (downloadState == Download.downloaded) {
-                                                  await ref.read(fileRepoProvider).openFile(message.fileName!);
-                                                } else if(message.senderId == widget.userId){
-                                                  await ref.read(fileRepoProvider).openFilex(message.filePath!);
-                                                } else {
-                                                  _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
-                                                }
-                                              },
-                                            );
-                                          },
-                                        );
-                                      }
-                                    }
-
-                                    return ChatBubble(
-                                      isUser: message.senderId == widget.userId,
-                                      message: message.message,
-                                      file: null,
-                                      fileName: null,
-                                      image: null,
-                                      filePath: null,
-                                      time: message.time.toString(),
-                                      download: Download.download,
-                                      onDownloadTap: null,
-                                      onImageTap: null,
-                                      onFileTap: null,
-                                    );
-                                  },
+          child: Stack(
+            children: [
+              if (chatProvider.isGeminiLoading)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
+                  child: Row(
+                    children: [
+                      CircularProgressIndicator(color: kCAccentColor),
+                      const SizedBox(width: 10),
+                      Text("Gemini is thinking...", style: Theme.of(context).textTheme.bodySmall),
+                    ],
+                  ),
+                ),
+              chatMessages.when(
+                  data: (chat) {
+                    if (chat.isEmpty) {
+                      return Center(
+                        child: Text(
+                          AppStrings.startConversationWithGemini,
+                          style: Theme.of(context).textTheme.bodySmall,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      );
+                    }
+                    return Column(
+                      children: [
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Scrollbar(
+                              radius: Radius.circular(10),
+                              controller: _scrollController,
+                              child: ListView.builder(
+                                padding: EdgeInsets.only(
+                                  right: 15,
+                                  left: 15,
+                                  bottom: 75,
                                 ),
+                                itemCount: chat.length,
+                                controller: _scrollController,
+                                reverse: true,
+                                shrinkWrap: true,
+                                itemBuilder: (_, index) {
+                                  final message = chat.reversed.toList()[index];
+                                  final chatRead = ref.read(chatNotifierProvider.notifier);
+
+                                  final String? fileUrl = message.file ?? message.image;
+
+                                  if (fileUrl != null) {
+                                    Download downloadState = Download.download;
+
+                                    if (chatProvider.downloadStates.containsKey(fileUrl)) {
+                                      downloadState = chatProvider.downloadStates[fileUrl]!;
+                                      return ChatBubble(
+                                        isUser: message.senderId == widget.userId,
+                                        message: message.message,
+                                        file: message.file,
+                                        fileName: message.fileName,
+                                        image: message.image,
+                                        filePath: message.filePath,
+                                        time: message.time.toString(),
+                                        download: downloadState,
+                                        onDownloadTap: () async{
+                                          if (downloadState != Download.downloaded && downloadState != Download.downloading) {
+                                            final error = await chatRead.downloadFile(fileUrl, message.fileName!);
+                                            if(error != null)_snackBarService.showSnackBar(message: error);
+                                          }
+                                        },
+                                        onImageTap: () async{
+                                          if (downloadState == Download.downloaded) {
+                                            final path = await ref.read(fileRepoProvider).openImage(message.fileName!);
+                                            _navigationService.push(ShowImageView(image: path, isDownloaded: true,));
+                                          } else if(message.senderId == widget.userId){
+                                            _navigationService.push(ShowImageView(image: message.filePath,isUser: true,));
+                                          }
+                                          _navigationService.push(ShowImageView(image: message.image));
+                                        },
+                                        onFileTap: () async {
+                                          if (downloadState == Download.downloaded) {
+                                            await ref.read(fileRepoProvider).openFile(message.fileName!);
+                                          } else if(message.senderId == widget.userId){
+                                            await ref.read(fileRepoProvider).openFilex(message.filePath!);
+                                          } else {
+                                            _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
+                                          }
+                                        },
+                                      );
+                                    } else {
+                                      return FutureBuilder<bool>(
+                                        future: chatRead.doesFileExist(message.fileName!),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState != ConnectionState.done) {
+                                            downloadState = Download.download;
+                                          } else if (snapshot.data == true) {
+                                            downloadState = Download.downloaded;
+                                          }
+                                          return ChatBubble(
+                                            isUser: message.senderId == widget.userId,
+                                            message: message.message,
+                                            file: message.file,
+                                            fileName: message.fileName,
+                                            image: message.image,
+                                            filePath: message.filePath,
+                                            time: message.time.toString(),
+                                            download: downloadState,
+                                            onDownloadTap: () async{
+                                              if (downloadState != Download.downloaded && downloadState != Download.downloading) {
+                                                final error = await chatRead.downloadFile(fileUrl, message.fileName!);
+                                                if(error != null)_snackBarService.showSnackBar(message: error);
+                                              }
+                                            },
+                                            onImageTap: () async{
+                                              if (downloadState == Download.downloaded) {
+                                                final path = await ref.read(fileRepoProvider).openImage(message.fileName!);
+                                                _navigationService.push(ShowImageView(image: path,isDownloaded: true,));
+                                              } else if(message.senderId == widget.userId){
+                                                _navigationService.push(ShowImageView(image: message.filePath,isUser: true,));
+                                              }
+                                              _navigationService.push(ShowImageView(image: message.image));
+                                            },
+                                            onFileTap: () async {
+                                              if (downloadState == Download.downloaded) {
+                                                await ref.read(fileRepoProvider).openFile(message.fileName!);
+                                              } else if(message.senderId == widget.userId){
+                                                await ref.read(fileRepoProvider).openFilex(message.filePath!);
+                                              } else {
+                                                _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
+                                              }
+                                            },
+                                          );
+                                        },
+                                      );
+                                    }
+                                  }
+
+                                  return ChatBubble(
+                                    isUser: message.senderId == widget.userId,
+                                    message: message.message,
+                                    file: null,
+                                    fileName: null,
+                                    image: null,
+                                    filePath: null,
+                                    time: message.time.toString(),
+                                    download: Download.download,
+                                    onDownloadTap: null,
+                                    onImageTap: null,
+                                    onFileTap: null,
+                                  );
+                                },
                               ),
                             ),
                           ),
-                        ],
-                      );
-                    },
-                    error: (error, stackTrace) {
-                      return Center(
-                        child: Text(
-                          AppStrings.errorGettingMessages,
-                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
-                      );
-                    },
-                    loading: (){
-                      return Center(
-                        child: CircularProgressIndicator(color: kCAccentColor),
-                      );}
-                ),
-                ChatField(
-                  controller: _controller,
-                  image: chatProvider.isImagePicked ? chatProvider.filePath : null,
-                  file: chatProvider.isFilePicked ? chatProvider.fileName : null,
-                  sendTap: () async{
-                    final message = JMessage(
-                      senderName: widget.userName!,
-                      senderId: widget.userId!,
-                      senderMail: widget.userMail!,
-                      receiverName: AppStrings.gemini,
-                      receiverId: AppStrings.geminiUID,
-                      receiverMail: '',
-                      message: _controller.text.trim(),
-                      time: DateTime.now(),
+                      ],
                     );
-                    if(_controller.text.trim().isNotEmpty || chatProvider.filePath != null){
-                      ref.read(chatNotifierProvider.notifier).sendMessage(_scrollController, message: message,
-                      ).then((error){
-                        if(error != null){
-                          _snackBarService.showSnackBar(message: error);
-                        } else {
-                          _controller.clear();
-                        }
-                      });
-                    }
                   },
-                  cameraTap: () {
-                    _dialogService.showBottom(context,
-                      title: AppStrings.pickImage,
-                      subtitle: AppStrings.pickImageSub,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              _navigationService.pop();
-                              ref.read(chatNotifierProvider.notifier).pickImage(ImageSource.camera);
-                            },
-                            icon: Icon(Icons.camera_alt_rounded, color: kCGreyColor, size: chatIconSize,),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              _navigationService.pop();
-                              ref.read(chatNotifierProvider.notifier).pickImage(ImageSource.gallery);
-                            },
-                            icon: Icon(Icons.photo_library_rounded, color: kCGreyColor, size: chatIconSize,),
-                          ),
-                        ],
-                      ),);
+                  error: (error, stackTrace) {
+                    return Center(
+                      child: Text(
+                        AppStrings.errorGettingMessages,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    );
                   },
-                  fileTap: ref.read(chatNotifierProvider.notifier).pickFile,
-                  onDeleteFile: ref.read(chatNotifierProvider.notifier).clearFile,
-                ),
-              ],
-            ),
+                  loading: (){
+                    return Center(
+                      child: CircularProgressIndicator(color: kCAccentColor),
+                    );}
+              ),
+              ChatField(
+                controller: _controller,
+                image: chatProvider.isImagePicked ? chatProvider.filePath : null,
+                file: chatProvider.isFilePicked ? chatProvider.fileName : null,
+                isSending: chatProvider.isLoading,
+                sendTap: () async{
+                  final message = JMessage(
+                    senderName: widget.userName!,
+                    senderId: widget.userId!,
+                    senderMail: widget.userMail!,
+                    receiverName: AppStrings.gemini,
+                    receiverId: AppStrings.geminiUID,
+                    receiverMail: '',
+                    message: _controller.text.trim(),
+                    time: DateTime.now(),
+                  );
+                  if(_controller.text.trim().isNotEmpty || chatProvider.filePath != null){
+                    ref.read(chatNotifierProvider.notifier).sendMessageToAI(_scrollController, message: message,
+                    ).then((error){
+                      if(error != null){
+                        _snackBarService.showSnackBar(message: error);
+                      } else {
+                        _controller.clear();
+                      }
+                    });
+                  }
+                },
+                cameraTap: () {
+                  _dialogService.showBottom(context,
+                    title: AppStrings.pickImage,
+                    subtitle: AppStrings.pickImageSub,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            _navigationService.pop();
+                            ref.read(chatNotifierProvider.notifier).pickImage(ImageSource.camera);
+                          },
+                          icon: Icon(Icons.camera_alt_rounded, color: kCGreyColor, size: chatIconSize,),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            _navigationService.pop();
+                            ref.read(chatNotifierProvider.notifier).pickImage(ImageSource.gallery);
+                          },
+                          icon: Icon(Icons.photo_library_rounded, color: kCGreyColor, size: chatIconSize,),
+                        ),
+                      ],
+                    ),);
+                },
+                fileTap: ref.read(chatNotifierProvider.notifier).pickFile,
+                onDeleteFile: ref.read(chatNotifierProvider.notifier).clearFile,
+              ),
+            ],
           ),
         ),
       ),

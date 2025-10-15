@@ -1,7 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/core/enums/download.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
@@ -58,11 +61,29 @@ class ChatRepo{
     }
   }
 
-  Future<void> receiveMessageFromAI({required JMessage message}) async{
-    final chatId = sortAndJoin(message.senderId, message.receiverId);
+  Future<String?> receiveMessageFromAI({required List<JMessage> messages,required JMessage message, File? file}) async{
     try{
-      await sendMessageToAI(message: message);
+      String? response;
+      List<Content>? history = await _geminiAIService.convertMessagesToContentHistory(messages, message.senderMail);
+      if(file != null){
+        final otherFile = await _geminiAIService.convertFileToDataPart(file);
+        response = await _geminiAIService.geminiGenerateWithTextAndFile(
+            prompt: message.message ?? '',
+            fileBytes: otherFile!.bytes,
+            fileMimeType: otherFile.mimeType,
+          conversationHistory: history,
+        );
+      }
+      else{
+        response = await _geminiAIService.geminiGenerateWithText(prompt: message.message.toString(), conversationHistory: history);
+      }
+      if(response == null)log('${AppStrings.chatRepoLog} response from Gemini is null');
+      JMessage aiResponse = JMessage(
+          senderId: message.senderId, senderName: message.senderName, senderMail: message.senderMail,message: response ?? 'Sorry, I couldn\'t process that.',
+          receiverId: message.receiverId, receiverName: message.receiverName, receiverMail: message.receiverMail, time: message.time);
+      await sendMessageToAI(message: aiResponse);
       log('${AppStrings.chatRepoLog}Message received from ${message.receiverName} successfully');
+      return response;
     }
     on FirebaseException catch(e){
       log('${AppStrings.chatRepoLog}Firebase Error sending message to ${message.receiverName}: ${e.code} - ${e.message}');
@@ -76,6 +97,7 @@ class ChatRepo{
       throw Exception('Failed to get response from ${message.receiverName}. Please try again.');
     }
   }
+
 
   Future<String> uploadFile({required String filename, required File file}) async{
     try{

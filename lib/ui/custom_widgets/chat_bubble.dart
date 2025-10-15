@@ -153,3 +153,19 @@ IconData getDownloadIcon(Download download){
       return Icons.file_download_off;
   }
 }
+
+// MarkdownBody(
+//                         data: message.toString(),
+//                         selectable: true,
+//                         styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
+//                           p: Theme.of(context).textTheme.bodyMedium,
+//                           strong: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
+//                           em: Theme.of(context).textTheme.bodyMedium!.copyWith(fontStyle: FontStyle.italic),
+//                           code: Theme.of(context).textTheme.bodySmall!.copyWith(
+//                                fontFamily: AppStrings.poppins,
+//                                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+//                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+//                           ),
+//                           listBullet: Theme.of(context).textTheme.bodyMedium,
+//                         ),
+//                       ),

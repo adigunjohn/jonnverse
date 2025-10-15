@@ -99,6 +99,7 @@ class ChatNotifier extends Notifier<ChatState> {
   ChatState build() => ChatState(downloadStates: _chatRepo.getDownloadStatesFromLocalStorage());
 
   Future<String?> sendMessage(ScrollController scrollController, {required JMessage message}) async {
+    if(await _connectivityRepo.hasInternet() == false) return AppStrings.noInternet;
     state = state.copyWith(isLoading: true);
     JMessage? jmessage;
     try {
@@ -217,6 +218,7 @@ class ChatNotifier extends Notifier<ChatState> {
   }
 
   Future<String?> sendMessageToAI(ScrollController scrollController, {required JMessage message}) async {
+    if(await _connectivityRepo.hasInternet() == false) return AppStrings.noInternet;
     state = state.copyWith(isLoading: true);
     JMessage? jmessage;
     try {
@@ -251,16 +253,26 @@ class ChatNotifier extends Notifier<ChatState> {
           filePath: state.filePath,
         );
       }
-      await _chatRepo.sendMessage(message: jmessage ?? message);
-      clearFile();
+      await _chatRepo.sendMessageToAI(message: jmessage ?? message);
       scrollToBottom(scrollController);
       log('Message sent to ${message.receiverName} successfully');
+      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isGeminiLoading: true);
+      final chatIds = ChatIds(senderId: message.senderId, receiverId: message.receiverId);
+      final historySnapshot = await ref.read(chatMessagesStreamProvider(chatIds).future);
+      await _chatRepo.receiveMessageFromAI(
+        message: message,
+        file: File(state.filePath!),
+        messages: historySnapshot,
+      );
+      clearFile();
+      scrollToBottom(scrollController);
       return null;
     } catch (e) {
       log('Error sending message to ${message.receiverName}: $e');
       return e.toString().replaceFirst('Exception: ', '');
     }finally{
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isGeminiLoading: false);
     }
   }
 

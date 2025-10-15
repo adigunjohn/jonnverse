@@ -7,7 +7,7 @@ import 'package:jonnverse/ui/common/ui_helpers.dart';
 import 'package:jonnverse/ui/custom_widgets/jn_textfield.dart';
 
 class ChatField extends StatelessWidget {
-  const ChatField({super.key, required this.controller, this.cameraTap, this.fileTap,required this.sendTap, this.image, this.file, this.onDeleteFile});
+  const ChatField({super.key, this.isSending = false, required this.controller, this.cameraTap, this.fileTap,required this.sendTap, this.image, this.file, this.onDeleteFile});
   final TextEditingController controller;
   final void Function()? cameraTap;
   final void Function()? fileTap;
@@ -15,6 +15,7 @@ class ChatField extends StatelessWidget {
   final String? image;
   final String? file;
   final void Function()? onDeleteFile;
+  final bool isSending;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -99,7 +100,14 @@ class ChatField extends StatelessWidget {
                       ),
                     ),),
                 ),
-                GestureDetector(
+                if (isSending == true) Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: kCBlueShadeColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(child: CircularProgressIndicator(color: kCWhiteColor,)),
+                ) else GestureDetector(
                   onTap: sendTap,
                   child: Container(
                     padding: EdgeInsets.all(10),
