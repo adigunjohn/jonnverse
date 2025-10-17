@@ -128,7 +128,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             itemBuilder: (context, index){
                               final chat = allChats[index];
                               final otherUser = ref.watch(otherUserFutureProvider(chat.receiverId));
-
+                              // log('otherUser: ${otherUser.value}');
                               return ChatTile(
                                 isAI: chat.receiverId == AppStrings.geminiUID,
                                 time: formatTimeStamp(chat.timestamp.toString()),

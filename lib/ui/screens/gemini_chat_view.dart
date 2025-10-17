@@ -233,9 +233,6 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
                                                 _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
                                               }
                                             },
-                                            onMessagePress: (){
-                                              log('message: long press in action');
-                                            },
                                           );
                                         },
                                       );
@@ -254,9 +251,6 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
                                     onDownloadTap: null,
                                     onImageTap: null,
                                     onFileTap: null,
-                                    onMessagePress: (){
-                                      log('message: long press in action');
-                                    },
                                   );
                                 },
                               ),

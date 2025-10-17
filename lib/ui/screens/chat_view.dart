@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -285,9 +284,6 @@ class _ChatViewState extends ConsumerState<ChatView> {
                             _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
                             }
                           },
-                          onMessagePress: (){
-                            log('message: long press in action');
-                          },
                         );
                       } else {
                         return FutureBuilder<bool>(
@@ -331,9 +327,6 @@ class _ChatViewState extends ConsumerState<ChatView> {
                                   _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
                                 }
                               },
-                              onMessagePress: (){
-                                log('message: long press in action');
-                              },
                             );
                           },
                         );
@@ -352,9 +345,6 @@ class _ChatViewState extends ConsumerState<ChatView> {
                       onDownloadTap: null,
                       onImageTap: null,
                       onFileTap: null,
-                      onMessagePress: (){
-                        log('message: long press in action');
-                      },
                     );
                   },
                             ),
