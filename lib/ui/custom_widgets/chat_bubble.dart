@@ -55,7 +55,6 @@ class ChatBubble extends StatelessWidget {
             children: [
               GestureDetector(
                 onLongPress: (){
-
                 },
                 child: Container(
                   padding: EdgeInsets.all(14),
