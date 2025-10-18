@@ -20,6 +20,7 @@ class InChatGemini extends StatelessWidget {
     this.message,
     this.onCloseTap,
     this.messages = const[],
+    this.scrollController
   });
 
   final TextEditingController controller;
@@ -31,6 +32,8 @@ class InChatGemini extends StatelessWidget {
   final String? image;
   final String? message;
   final List<InChatGeminiMessage> messages;
+  final ScrollController? scrollController;
+
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +54,6 @@ class InChatGemini extends StatelessWidget {
               SizedBox(height: 8,),
               Container(
                 padding: EdgeInsets.all(10),
-                width: message != null ? double.infinity : null,
                 decoration: BoxDecoration(
                   color: Theme.of(context).hintColor,
                   // color: Theme.of(context).cardColor,
@@ -84,10 +86,11 @@ class InChatGemini extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if(file != null || image != null) SizedBox(height: message == null ? 0 : 8,),
-                    if(message != null) Text(
+                    if(file != null || image != null) SizedBox(height: message == null || message == '' ? 0 : 8,),
+                    if(message != null && message != '') Text(
                       message.toString(),
-                      style: 1==1 ? Theme.of(context).textTheme.bodySmall!.copyWith(color: kCWhiteColor) : Theme.of(context).textTheme.bodySmall,
+                     // style: 1==1 ? Theme.of(context).textTheme.bodySmall!.copyWith(color: kCWhiteColor) : Theme.of(context).textTheme.bodySmall,
+                      style: Theme.of(context).textTheme.bodySmall,
                       maxLines: image != null || file != null ? 2 : 4,
                       textAlign: TextAlign.start,
                       overflow: TextOverflow.ellipsis,
@@ -101,31 +104,43 @@ class InChatGemini extends StatelessWidget {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    if(message != null) GeminiChatWrapPrompt(text:AppStrings.explainMessage,onTap: (){
+                    if(message != null && message != '') GeminiChatWrapPrompt(text:AppStrings.explainMessage,onTap: (){
                       onSendTap(AppStrings.explainMessage);
                     },),
                     if(image != null) GeminiChatWrapPrompt(text: AppStrings.describeImage, onTap: (){
                       onSendTap(AppStrings.describeImage);
                     },),
+                    if(image != null) GeminiChatWrapPrompt(text: AppStrings.imageContent, onTap: (){
+                      onSendTap(AppStrings.imageContent);
+                    },),
+                    if(image != null) GeminiChatWrapPrompt(text: AppStrings.imageDoc, onTap: (){
+                      onSendTap(AppStrings.imageDoc);
+                    },),
                     if(file != null) GeminiChatWrapPrompt(text: AppStrings.analyseFile,onTap: (){
                       onSendTap(AppStrings.analyseFile);
                     },),
-                    if(message != null) GeminiChatWrapPrompt(text: AppStrings.translateIgbo, onTap: (){
+                    if(file != null) GeminiChatWrapPrompt(text: AppStrings.fileType,onTap: (){
+                      onSendTap(AppStrings.fileType);
+                    },),
+                    if(file != null) GeminiChatWrapPrompt(text: AppStrings.fileBriefSummary,onTap: (){
+                      onSendTap(AppStrings.fileBriefSummary);
+                    },),
+                    if(message != null && message != '') GeminiChatWrapPrompt(text: AppStrings.translateIgbo, onTap: (){
                       onSendTap(AppStrings.translateIgbo);
                     },),
-                    if(message != null) GeminiChatWrapPrompt(text: AppStrings.translateHausa, onTap: (){
+                    if(message != null && message != '') GeminiChatWrapPrompt(text: AppStrings.translateHausa, onTap: (){
                       onSendTap(AppStrings.translateHausa);
                     },),
-                    if(message != null) GeminiChatWrapPrompt(text: AppStrings.translateYoruba, onTap: (){
+                    if(message != null && message != '') GeminiChatWrapPrompt(text: AppStrings.translateYoruba, onTap: (){
                       onSendTap(AppStrings.translateYoruba);
                     },),
-                    if(message != null) GeminiChatWrapPrompt(text: AppStrings.translateEnglish, onTap: (){
+                    if(message != null && message != '') GeminiChatWrapPrompt(text: AppStrings.translateEnglish, onTap: (){
                       onSendTap(AppStrings.translateEnglish);
                     },),
-                    if(message != null) GeminiChatWrapPrompt(text: AppStrings.translateSpanish, onTap: (){
+                    if(message != null && message != '') GeminiChatWrapPrompt(text: AppStrings.translateSpanish, onTap: (){
                       onSendTap(AppStrings.translateSpanish);
                     },),
-                    if(message != null) GeminiChatWrapPrompt(text: AppStrings.translateFrench, onTap: (){
+                    if(message != null && message != '') GeminiChatWrapPrompt(text: AppStrings.translateFrench, onTap: (){
                       onSendTap(AppStrings.translateFrench);
                     },),
                   ],
@@ -152,63 +167,70 @@ class InChatGemini extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   )
-                      : ListView.builder(
-                    itemCount: messages.length,
-                      // physics: BouncingScrollPhysics(),
-                      itemBuilder: (_,i){
-                     final content = messages[i];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5.0),
-                      child: Column(
-                        crossAxisAlignment: content.isUser ? CrossAxisAlignment.start : CrossAxisAlignment.end,
-                        children: [
-                          Container(
-                            constraints: BoxConstraints(
-                              maxWidth: screenWidth(context) * 0.75,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(15),
-                                topRight: Radius.circular(15),
-                                bottomLeft: content.isUser ? Radius.circular(0) : Radius.circular(15),
-                                bottomRight: content.isUser ? Radius.circular(15) : Radius.circular(0),
+                      : Align(
+                    alignment: Alignment.topCenter,
+                        child: ListView.builder(
+                            itemCount: messages.length,
+                        reverse: true,
+                        shrinkWrap: true,
+                        controller: scrollController,
+                        // physics: BouncingScrollPhysics(),
+                        itemBuilder: (_,i){
+                                             final content = messages[i];
+                                            return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                        child: Column(
+                          crossAxisAlignment: content.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              constraints: BoxConstraints(
+                                maxWidth: screenWidth(context) * 0.75,
                               ),
-                              border: Border.all(width: 2.5,color: kCBlueShadeColor),
-                            ),
-                            padding: EdgeInsets.all(10),
-                            child: MarkdownBody(
-                              data: content.message,
-                              selectable: true,
-                              styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context),).copyWith(
-                                p: Theme.of(context).textTheme.bodySmall,
-                                strong: Theme.of(context).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.bold),
-                                em: Theme.of(context).textTheme.bodySmall!.copyWith(fontStyle: FontStyle.italic),
-                                code: Theme.of(context,).textTheme.bodySmall!.copyWith(
-                                  fontFamily: AppStrings.poppins,
-                                  backgroundColor: Theme.of(context,).colorScheme.surfaceVariant,
-                                  color: Theme.of(context,).colorScheme.onSurfaceVariant,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(15),
+                                  topRight: Radius.circular(15),
+                                  bottomLeft: content.isUser ? Radius.circular(15) : Radius.circular(0),
+                                  bottomRight: content.isUser ? Radius.circular(0) : Radius.circular(15),
                                 ),
-                                listBullet: Theme.of(context).textTheme.bodySmall,
+                                border: Border.all(width: 2,color: kCBlueShadeColor),
+                              ),
+                              padding: EdgeInsets.all(10),
+                              child: MarkdownBody(
+                                data: content.message,
+                                selectable: true,
+                                styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context),).copyWith(
+                                  p: Theme.of(context).textTheme.bodySmall,
+                                  strong: Theme.of(context).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.bold),
+                                  em: Theme.of(context).textTheme.bodySmall!.copyWith(fontStyle: FontStyle.italic),
+                                  code: Theme.of(context,).textTheme.bodySmall!.copyWith(
+                                    fontFamily: AppStrings.poppins,
+                                    backgroundColor: Theme.of(context,).colorScheme.surfaceVariant,
+                                    color: Theme.of(context,).colorScheme.onSurfaceVariant,
+                                  ),
+                                  listBullet: Theme.of(context).textTheme.bodySmall,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  })
+                          ],
+                        ),
+                                            );
+                                          }),
+                      )
                 ),
               ),
              SizedBox(height: 20,),
               JnTextField(
                 controller: controller,
                 hintText: AppStrings.geminiHintText,
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.multiline,
+                maxLines: 2,
                 suffix: GestureDetector(
                   onTap: (){
                     onSendTap(null);
                   },
                   child: loading ?
-                  SizedBox(height: 2, width: 20, child: CircularProgressIndicator(color: kCBlueShadeColor,),) :
+                  SizedBox(height: 15, width: 15, child: CircularProgressIndicator(color: kCBlueShadeColor,),) :
                   Icon(Icons.send, color: kCBlueShadeColor, size: settingsIconSize,),
                 ),
               ),

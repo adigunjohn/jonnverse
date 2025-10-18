@@ -51,6 +51,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _aiController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final ScrollController _aiScrollController = ScrollController();
 
   late final ChatIds _chatIds;
   @override
@@ -64,6 +65,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
     _controller.dispose();
     _scrollController.dispose();
     _aiController.dispose();
+    _aiScrollController.dispose();
   }
 
   @override
@@ -82,6 +84,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                 onTap: () {
                   _navigationService.pop();
                   ref.read(chatNotifierProvider.notifier).clearFile();
+                  ref.read(inChatGeminiNotifierProvider.notifier).closeMessagePressed();
                 },
                 child: Icon(
                   Icons.arrow_back_rounded,
@@ -142,6 +145,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
         canPop: true,
         onPopInvokedWithResult: (x,y){
           ref.read(chatNotifierProvider.notifier).clearFile();
+          ref.read(inChatGeminiNotifierProvider.notifier).closeMessagePressed();
         },
         child: SafeArea(
           child: Stack(
@@ -299,7 +303,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                                   message: message.message,
                                   file: message.image == null && message.file != null ? path : null,
                                   imageFile: message.image != null && message.file == null ? path : null,
-                                  fileName: message.fileName,
+                                  fileName: message.image == null && message.file != null ? message.fileName : null,
                                 );
                               }
                               else if(message.senderId == widget.userId){
@@ -308,7 +312,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                                   message: message.message,
                                   file: message.image == null && message.file != null ? message.filePath : null,
                                   imageFile: message.image != null && message.file == null ? message.filePath : null,
-                                  fileName: message.fileName,
+                                  fileName: message.image == null && message.file != null ? message.fileName : null,
                                 );
                               }
                               else {
@@ -367,7 +371,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                                       message: message.message,
                                       file: message.image == null && message.file != null ? path : null,
                                     imageFile: message.image != null && message.file == null ? path : null,
-                                    fileName: message.fileName,
+                                    fileName: message.image == null && message.file != null ? message.fileName : null,
                                   );
                                 }
                                 else if(message.senderId == widget.userId){
@@ -376,7 +380,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                                     message: message.message,
                                     file: message.image == null && message.file != null ? message.filePath : null,
                                     imageFile: message.image != null && message.file == null ? message.filePath : null,
-                                    fileName: message.fileName,
+                                    fileName: message.image == null && message.file != null ? message.fileName : null,
                                   );
                                 }
                                 else {
@@ -401,7 +405,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                       onDownloadTap: null,
                       onImageTap: null,
                       onFileTap: null,
-                      onMessagePress: ()=> ref.read(inChatGeminiNotifierProvider.notifier).updateMessagePressed(value: true,message: message.message),
+                      onMessagePress: ()=> ref.read(inChatGeminiNotifierProvider.notifier).updateMessagePressed(value: true,message: message.message,fileName: null,imageFile: null,file: null,),
                     );
                   },
                             ),
@@ -479,26 +483,31 @@ class _ChatViewState extends ConsumerState<ChatView> {
                 onDeleteFile: ref.read(chatNotifierProvider.notifier).clearFile,
               ),
               Visibility(
+                // visible: true,
                 visible: inChatGeminiProvider.isMessagePressed,
                   child: InChatGemini(
-                    onCloseTap:()=> ref.read(inChatGeminiNotifierProvider.notifier).updateMessagePressed(value: false,message: null,file: null, imageFile: null, loading: false,fileName: null,messages: [],started: false,),
+                    onCloseTap: ref.read(inChatGeminiNotifierProvider.notifier).closeMessagePressed,
                     controller: _aiController,
+                    scrollController: _aiScrollController,
                     message: inChatGeminiProvider.messageContent,
                     file: inChatGeminiProvider.fileContent,
                     fileName: inChatGeminiProvider.fileNameContent,
                     image: inChatGeminiProvider.imageFileContent,
                     loading: inChatGeminiProvider.contentLoading,
-                    messages: inChatGeminiProvider.messages,
+                    messages: inChatGeminiProvider.messages.reversed.toList(),
                     onSendTap: (prompt) async {
                       if(prompt != null || _aiController.text.trim().isNotEmpty){
+                        final imageCaption = inChatGeminiProvider.messageContent != null && inChatGeminiProvider.imageFileContent != null ? inChatGeminiProvider.messageContent : '';
+                        final fileCaption = inChatGeminiProvider.messageContent != null && inChatGeminiProvider.fileContent != null ? inChatGeminiProvider.messageContent : '';
+                        final caption = inChatGeminiProvider.imageFileContent == null && inChatGeminiProvider.fileContent == null ? inChatGeminiProvider.messageContent : '';
                         final initialMessage = InChatGeminiMessage(
-                            message: 'Hey, This is just a random message from a chat. So do this: "${(prompt ?? _aiController.text)}"',
+                            message: '$caption$imageCaption$fileCaption "${(prompt ?? _aiController.text)}"',
                             isUser: true,
                             filepath: inChatGeminiProvider.imageFileContent ?? inChatGeminiProvider.fileContent
                         );
                         final otherMessage = InChatGeminiMessage(message: (prompt ?? _aiController.text), isUser: true,);
                         final message = inChatGeminiProvider.conversationStarted ? otherMessage : initialMessage;
-                        final result = await ref.read(inChatGeminiNotifierProvider.notifier).promptGemini(message);
+                        final result = await ref.read(inChatGeminiNotifierProvider.notifier).promptGemini(message, _aiScrollController);
                         if(result != null) _snackBarService.showSnackBar(message: result);
                         if(result == null) _aiController.clear();
                       }

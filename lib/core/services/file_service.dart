@@ -56,8 +56,10 @@ class FileService {
     final tempFile = File(filepath);
     final dir = await appDirectory();
     final fileName = path.basename(filepath);
-    final savedImage = await tempFile.copy('$dir/$fileName');
+    final newPath = path.join(dir.path, fileName);
+    final savedImage = await tempFile.copy(newPath);
     return savedImage;
   }
 }
+
 

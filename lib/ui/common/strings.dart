@@ -66,7 +66,11 @@ class AppStrings{
 
   static const String explainMessage = 'Explain Message';
   static const String describeImage = 'Describe Image';
+  static const String imageContent = 'Image Content';
+  static const String imageDoc = 'Is image a doc?';
   static const String analyseFile = 'Analyse File';
+  static const String fileType = 'What type of file is this?';
+  static const String fileBriefSummary = 'Brief Summary';
   static const String translateIgbo = 'Translate to Igbo';
   static const String translateHausa = 'Translate to Hausa';
   static const String translateYoruba = 'Translate to Yoruba';
