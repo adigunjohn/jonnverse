@@ -75,8 +75,11 @@ class ChatState{
   final bool isGeminiLoading;
   final bool isImagePicked;
   final bool isFilePicked;
-  ChatState({this.downloadStates = const {}, this.filePath, this.fileName, this.isLoading = false, this.isGeminiLoading = false, this.isFilePicked = false, this.isImagePicked = false,});
- ChatState copyWith({String? filePath, String? fileName, bool? isLoading, bool? isGeminiLoading, bool? isImagePicked, bool? isFilePicked, Map<String, Download>? downloadStates,}){
+  final bool isMessagePressed;
+  final String? messageContent;
+  final String? fileContent;
+  ChatState({this.downloadStates = const {},this.fileContent, this.messageContent, this.isMessagePressed = false, this.filePath, this.fileName, this.isLoading = false, this.isGeminiLoading = false, this.isFilePicked = false, this.isImagePicked = false,});
+ ChatState copyWith({String? filePath,String? fileContent, String? messageContent, String? fileName, bool? isMessagePressed, bool? isLoading, bool? isGeminiLoading, bool? isImagePicked, bool? isFilePicked, Map<String, Download>? downloadStates,}){
     return ChatState(
       filePath: filePath ?? this.filePath,
       fileName: fileName ?? this.fileName,
@@ -85,6 +88,9 @@ class ChatState{
       isImagePicked: isImagePicked ?? this.isImagePicked,
       isFilePicked: isFilePicked ?? this.isFilePicked,
       downloadStates: downloadStates ?? this.downloadStates,
+      isMessagePressed: isMessagePressed ?? this.isMessagePressed,
+      messageContent: messageContent ?? this.messageContent,
+      fileContent: fileContent ?? this.fileContent,
     );
   }
 }
@@ -274,6 +280,10 @@ class ChatNotifier extends Notifier<ChatState> {
     }finally{
       state = state.copyWith(isGeminiLoading: false);
     }
+  }
+
+  void updateMessagePressed({required bool value,String? message,String? file}){
+    state = state.copyWith(isMessagePressed: value, messageContent: message, fileContent: file);
   }
 
 }

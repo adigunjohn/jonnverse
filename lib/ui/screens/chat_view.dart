@@ -16,6 +16,7 @@ import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
 import 'package:jonnverse/ui/custom_widgets/chat_bubble.dart';
 import 'package:jonnverse/ui/custom_widgets/chat_field.dart';
+import 'package:jonnverse/ui/custom_widgets/gemini_chat.dart';
 import 'package:jonnverse/ui/screens/show_image_view.dart';
 
 class ChatView extends ConsumerStatefulWidget {
@@ -46,6 +47,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
   final DialogService _dialogService = locator<DialogService>();
   final SnackBarService _snackBarService = locator<SnackBarService>();
   final TextEditingController _controller = TextEditingController();
+  final TextEditingController _aicontroller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
   late final ChatIds _chatIds;
@@ -59,6 +61,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
     super.dispose();
     _controller.dispose();
     _scrollController.dispose();
+    _aicontroller.dispose();
   }
 
   @override
@@ -284,6 +287,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                             _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
                             }
                           },
+                          onMessagePress: ()=> ref.read(chatNotifierProvider.notifier).updateMessagePressed(value: true,message:  message.message, file: null),
                         );
                       } else {
                         return FutureBuilder<bool>(
@@ -327,6 +331,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                                   _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
                                 }
                               },
+                              onMessagePress: ()=> ref.read(chatNotifierProvider.notifier).updateMessagePressed(value: true,message: message.message, file: null),
                             );
                           },
                         );
@@ -345,6 +350,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                       onDownloadTap: null,
                       onImageTap: null,
                       onFileTap: null,
+                      onMessagePress: ()=> ref.read(chatNotifierProvider.notifier).updateMessagePressed(value: true,message: message.message, file: null),
                     );
                   },
                             ),
@@ -421,6 +427,15 @@ class _ChatViewState extends ConsumerState<ChatView> {
                 fileTap: ref.read(chatNotifierProvider.notifier).pickFile,
                 onDeleteFile: ref.read(chatNotifierProvider.notifier).clearFile,
               ),
+              Visibility(
+                visible: chatProvider.isMessagePressed,
+                  child: GeminiChat(
+                    onCloseTap:()=> ref.read(chatNotifierProvider.notifier).updateMessagePressed(value: false,message: null,file: null),
+                    controller: _aicontroller,
+                    message: chatProvider.messageContent,
+                    // file: 'my cv.doc',
+                    // image: AppStrings.dp1,
+                  ),),
             ],
           ),
         ),

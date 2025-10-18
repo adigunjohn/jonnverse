@@ -26,6 +26,7 @@ class ChatBubble extends StatelessWidget {
     required this.time,
     this.fileName,
     this.download,
+    this.onMessagePress,
   });
   final bool isUser;
   final bool isAI;
@@ -39,6 +40,7 @@ class ChatBubble extends StatelessWidget {
   final String? image;
   final String time;
   final void Function()? onImageTap;
+  final void Function()? onMessagePress;
   final void Function()? onFileTap;
   final void Function()? onDownloadTap;
   @override
@@ -54,8 +56,8 @@ class ChatBubble extends StatelessWidget {
             spacing: 2,
             children: [
               GestureDetector(
-                onLongPress: (){
-                },
+                onTapDown: (details){},
+                onLongPress: onMessagePress,
                 child: Container(
                   padding: EdgeInsets.all(14),
                   constraints: BoxConstraints(
