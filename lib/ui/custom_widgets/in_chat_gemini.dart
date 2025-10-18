@@ -8,13 +8,14 @@ import 'package:jonnverse/ui/common/ui_helpers.dart';
 import 'package:jonnverse/ui/custom_widgets/jn_textfield.dart';
 import 'package:jonnverse/ui/custom_widgets/wrap_prompt.dart';
 
-class GeminiChat extends StatelessWidget {
-  GeminiChat({super.key,
+class InChatGemini extends StatelessWidget {
+  InChatGemini({super.key,
   required this.controller,
     this.onSendTap,
     this.loading = false,
     this.isUser = false,
     this.file,
+    this.fileName,
     this.image,
     this.message,
     this.onCloseTap,
@@ -26,6 +27,7 @@ class GeminiChat extends StatelessWidget {
   final bool loading;
   final bool isUser;
   final String? file;
+  final String? fileName;
   final String? image;
   final String? message;
 
@@ -58,8 +60,8 @@ class GeminiChat extends StatelessWidget {
                   children: [
                     if(image != null) ClipRRect(
                       borderRadius: BorderRadius.circular(6),
-                      child: Image.asset('$image',fit: BoxFit.cover, height: 80,width: 80,),
-                        //child: Image.file(File(''),fit: BoxFit.cover, height: 75,width: 75,),
+                      // child: Image.asset('$image',fit: BoxFit.cover, height: 80,width: 80,),
+                        child: Image.file(File(''),fit: BoxFit.cover, height: 80,width: 80,),
                     ),
                     if(file != null) Container(
                       height: 35,
@@ -74,7 +76,7 @@ class GeminiChat extends StatelessWidget {
                         padding: const EdgeInsets.all(8.0),
                         child: Center(
                           child: Text(
-                            file.toString(),
+                            fileName.toString(),
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.labelSmall!.copyWith(color: kCBlackColor),
                           ),

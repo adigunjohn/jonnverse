@@ -102,17 +102,6 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
         child: SafeArea(
           child: Stack(
             children: [
-              if (chatProvider.isGeminiLoading)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
-                  child: Row(
-                    children: [
-                      SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: kCAccentColor)),
-                      const SizedBox(width: 10),
-                      Text("Gemini is thinking...", style: Theme.of(context).textTheme.bodySmall),
-                    ],
-                  ),
-                ),
               chatMessages.when(
                   data: (chat) {
                     if (chat.isEmpty) {
@@ -274,6 +263,7 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
                     );}
               ),
               ChatField(
+                isGeminiLoading: chatProvider.isGeminiLoading,
                 controller: _controller,
                 image: chatProvider.isImagePicked ? chatProvider.filePath : null,
                 file: chatProvider.isFilePicked ? chatProvider.fileName : null,

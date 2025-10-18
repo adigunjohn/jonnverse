@@ -7,7 +7,7 @@ import 'package:jonnverse/ui/common/ui_helpers.dart';
 import 'package:jonnverse/ui/custom_widgets/jn_textfield.dart';
 
 class ChatField extends StatelessWidget {
-  const ChatField({super.key, this.isSending = false, required this.controller, this.cameraTap, this.fileTap,required this.sendTap, this.image, this.file, this.onDeleteFile});
+  const ChatField({super.key, this.isSending = false,this.isGeminiLoading = false, required this.controller, this.cameraTap, this.fileTap,required this.sendTap, this.image, this.file, this.onDeleteFile});
   final TextEditingController controller;
   final void Function()? cameraTap;
   final void Function()? fileTap;
@@ -16,6 +16,7 @@ class ChatField extends StatelessWidget {
   final String? file;
   final void Function()? onDeleteFile;
   final bool isSending;
+  final bool isGeminiLoading;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -69,6 +70,18 @@ class ChatField extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 5,),
+            if (isGeminiLoading) Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: kCAccentColor)),
+                    const SizedBox(width: 10),
+                    Text(AppStrings.geminiThinking, style: Theme.of(context).textTheme.bodySmall),
+                  ],
+                ),
+              ),
             SizedBox(height: 5,),
             Row(
               spacing: 5,

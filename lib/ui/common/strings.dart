@@ -9,6 +9,7 @@ class AppStrings{
   static const String noInternet = 'No Internet Connection';
   static const String geminiFlash = 'gemini-2.5-flash';
   static const String geminiPro =  'gemini-2.5-pro';
+  static const String geminiThinking =  'Gemini is thinking...';
 
   //ErrorView
   static const String errorText = 'Something went wrong, this page does not exist';
