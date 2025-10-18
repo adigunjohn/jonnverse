@@ -9,7 +9,6 @@ class AppStrings{
   static const String noInternet = 'No Internet Connection';
   static const String geminiFlash = 'gemini-2.5-flash';
   static const String geminiPro =  'gemini-2.5-pro';
-  static const String geminiThinking =  'Gemini is thinking...';
 
   //ErrorView
   static const String errorText = 'Something went wrong, this page does not exist';
@@ -60,6 +59,22 @@ class AppStrings{
   static const String startConversationWithGemini = 'Start a conversation with Gemini';
   static const String pickImage = 'Pick Image';
   static const String pickImageSub = 'Select image from';
+  static const String geminiThinking =  'Gemini is thinking...';
+  static const String geminiHintText =  'What do you want gemini to do?';
+  static const String close = 'Close';
+
+
+  static const String explainMessage = 'Explain Message';
+  static const String describeImage = 'Describe Image';
+  static const String analyseFile = 'Analyse File';
+  static const String translateIgbo = 'Translate to Igbo';
+  static const String translateHausa = 'Translate to Hausa';
+  static const String translateYoruba = 'Translate to Yoruba';
+  static const String translateEnglish = 'Translate to English';
+  static const String translateSpanish = 'Translate to Spanish';
+  static const String translateFrench = 'Translate to French';
+
+
 
 
   //SettingsView

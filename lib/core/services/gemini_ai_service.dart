@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:jonnverse/core/models/in_chat_gemini_message.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:mime/mime.dart';
@@ -113,6 +114,48 @@ class GeminiAIService {
         } else {
           log('Skipping message in history conversion (no valid parts): ${message.message?.substring(0, 20) ?? "Media message"}');
         }
+
+    }
+    log('Fetching history completed; ${history.length} messages converted out of ${messages.length}.');
+    return history;
+  }
+
+  Future<List<Content>> convertInChatGeminiMessagesToContentHistory(List<InChatGeminiMessage> messages) async {
+    log('Fetching Gemini chat history started');
+    List<Content> history = [];
+    for (final message in messages) {
+      List<Part> parts = [];
+      if (message.message.isNotEmpty) {
+        parts.add(TextPart(message.message));
+      }
+
+      if (message.filepath != null) {
+        try {
+          final file = File(message.filepath!);
+          if (await file.exists()) {
+            final Uint8List fileBytes = await file.readAsBytes();
+            final String? mimeType = lookupMimeType(
+                message.filepath!,
+                headerBytes: fileBytes.sublist(0, defaultMagicNumbersMaxLength)
+            );
+            parts.add(DataPart(mimeType ?? 'application/octet-stream', fileBytes));
+          } else {
+            log('Skipping file in history: File not found');
+          }
+        } catch (e) {
+          log('Error processing file from history for ${message.filepath}: $e');
+        }
+      }
+
+      if (parts.isNotEmpty) {
+        if (message.isUser) {
+          history.add(Content('user', parts));
+        } else {
+          history.add(Content('model', parts));
+        }
+      } else {
+        log('Skipping message in history conversion (no valid parts): ${message.message.substring(0, 20)}');
+      }
 
     }
     log('Fetching history completed; ${history.length} messages converted out of ${messages.length}.');

@@ -88,7 +88,8 @@ class ChatBubble extends StatelessWidget {
                               child:
                                   isUser == true
                                       ? Image.file(File(filePath.toString()), fit: BoxFit.cover,)
-                                      : CachedNetworkImage(
+                                      :
+                                  CachedNetworkImage(
                                         imageUrl: image.toString(),
                                         fit: BoxFit.cover,
                                         progressIndicatorBuilder: (context, imageUrl, progress,) {

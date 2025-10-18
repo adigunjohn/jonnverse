@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/app/config/routes.dart';
 import 'package:jonnverse/core/enums/download.dart';
+import 'package:jonnverse/core/models/in_chat_gemini_message.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
 import 'package:jonnverse/core/services/dialog_service.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
@@ -277,8 +278,9 @@ class _ChatViewState extends ConsumerState<ChatView> {
                               _navigationService.push(ShowImageView(image: path, isDownloaded: true,));
                             } else if(message.senderId == widget.userId){
                               _navigationService.push(ShowImageView(image: message.filePath,isUser: true,));
+                              // _navigationService.push(ShowImageView(image: message.image,));
                             }
-                            _navigationService.push(ShowImageView(image: message.image));
+                            // _navigationService.push(ShowImageView(image: message.image));
                           },
                           onFileTap: () async {
                             if (downloadState == Download.downloaded) {
@@ -289,7 +291,30 @@ class _ChatViewState extends ConsumerState<ChatView> {
                             _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
                             }
                           },
-                          onMessagePress: ()=> ref.read(inChatGeminiNotifierProvider.notifier).updateMessagePressed(value: true,message:  message.message, file: null),
+                            onMessagePress: ()async{
+                              if(downloadState == Download.downloaded){
+                                final path = await ref.read(fileRepoProvider).openImage(message.fileName!);
+                                ref.read(inChatGeminiNotifierProvider.notifier).updateMessagePressed(
+                                  value: true,
+                                  message: message.message,
+                                  file: message.image == null && message.file != null ? path : null,
+                                  imageFile: message.image != null && message.file == null ? path : null,
+                                  fileName: message.fileName,
+                                );
+                              }
+                              else if(message.senderId == widget.userId){
+                                ref.read(inChatGeminiNotifierProvider.notifier).updateMessagePressed(
+                                  value: true,
+                                  message: message.message,
+                                  file: message.image == null && message.file != null ? message.filePath : null,
+                                  imageFile: message.image != null && message.file == null ? message.filePath : null,
+                                  fileName: message.fileName,
+                                );
+                              }
+                              else {
+                                _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
+                              }
+                            }
                         );
                       } else {
                         return FutureBuilder<bool>(
@@ -321,8 +346,9 @@ class _ChatViewState extends ConsumerState<ChatView> {
                                   _navigationService.push(ShowImageView(image: path,isDownloaded: true,));
                                 } else if(message.senderId == widget.userId){
                                    _navigationService.push(ShowImageView(image: message.filePath,isUser: true,));
+                                   // _navigationService.push(ShowImageView(image: message.image,));
                                 }
-                                _navigationService.push(ShowImageView(image: message.image));
+                                // _navigationService.push(ShowImageView(image: message.image));
                               },
                               onFileTap: () async {
                                 if (downloadState == Download.downloaded) {
@@ -333,7 +359,30 @@ class _ChatViewState extends ConsumerState<ChatView> {
                                   _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
                                 }
                               },
-                              onMessagePress: ()=> ref.read(inChatGeminiNotifierProvider.notifier).updateMessagePressed(value: true,message: message.message, file: null),
+                              onMessagePress: ()async{
+                                if(downloadState == Download.downloaded){
+                                  final path = await ref.read(fileRepoProvider).openImage(message.fileName!);
+                                  ref.read(inChatGeminiNotifierProvider.notifier).updateMessagePressed(
+                                      value: true,
+                                      message: message.message,
+                                      file: message.image == null && message.file != null ? path : null,
+                                    imageFile: message.image != null && message.file == null ? path : null,
+                                    fileName: message.fileName,
+                                  );
+                                }
+                                else if(message.senderId == widget.userId){
+                                  ref.read(inChatGeminiNotifierProvider.notifier).updateMessagePressed(
+                                    value: true,
+                                    message: message.message,
+                                    file: message.image == null && message.file != null ? message.filePath : null,
+                                    imageFile: message.image != null && message.file == null ? message.filePath : null,
+                                    fileName: message.fileName,
+                                  );
+                                }
+                                else {
+                                  _dialogService.showAlertDialog(context, title: 'File Not Downloaded', subtitle: 'First download the file you wanna open.');
+                                }
+                              }
                             );
                           },
                         );
@@ -352,7 +401,7 @@ class _ChatViewState extends ConsumerState<ChatView> {
                       onDownloadTap: null,
                       onImageTap: null,
                       onFileTap: null,
-                      onMessagePress: ()=> ref.read(inChatGeminiNotifierProvider.notifier).updateMessagePressed(value: true,message: message.message, file: null),
+                      onMessagePress: ()=> ref.read(inChatGeminiNotifierProvider.notifier).updateMessagePressed(value: true,message: message.message),
                     );
                   },
                             ),
@@ -432,15 +481,28 @@ class _ChatViewState extends ConsumerState<ChatView> {
               Visibility(
                 visible: inChatGeminiProvider.isMessagePressed,
                   child: InChatGemini(
-                    onCloseTap:()=> ref.read(inChatGeminiNotifierProvider.notifier).updateMessagePressed(value: false,message: null,file: null, imageFile: null, loading: false,fileName: null),
+                    onCloseTap:()=> ref.read(inChatGeminiNotifierProvider.notifier).updateMessagePressed(value: false,message: null,file: null, imageFile: null, loading: false,fileName: null,messages: [],started: false,),
                     controller: _aiController,
                     message: inChatGeminiProvider.messageContent,
                     file: inChatGeminiProvider.fileContent,
                     fileName: inChatGeminiProvider.fileNameContent,
                     image: inChatGeminiProvider.imageFileContent,
                     loading: inChatGeminiProvider.contentLoading,
-                    // isUser: ,
-                    onSendTap: (){},
+                    messages: inChatGeminiProvider.messages,
+                    onSendTap: (prompt) async {
+                      if(prompt != null || _aiController.text.trim().isNotEmpty){
+                        final initialMessage = InChatGeminiMessage(
+                            message: 'Hey, This is just a random message from a chat. So do this: "${(prompt ?? _aiController.text)}"',
+                            isUser: true,
+                            filepath: inChatGeminiProvider.imageFileContent ?? inChatGeminiProvider.fileContent
+                        );
+                        final otherMessage = InChatGeminiMessage(message: (prompt ?? _aiController.text), isUser: true,);
+                        final message = inChatGeminiProvider.conversationStarted ? otherMessage : initialMessage;
+                        final result = await ref.read(inChatGeminiNotifierProvider.notifier).promptGemini(message);
+                        if(result != null) _snackBarService.showSnackBar(message: result);
+                        if(result == null) _aiController.clear();
+                      }
+                    },
                   ),),
             ],
           ),

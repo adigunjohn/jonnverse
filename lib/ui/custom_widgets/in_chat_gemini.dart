@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:jonnverse/core/models/in_chat_gemini_message.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
@@ -9,29 +10,28 @@ import 'package:jonnverse/ui/custom_widgets/jn_textfield.dart';
 import 'package:jonnverse/ui/custom_widgets/wrap_prompt.dart';
 
 class InChatGemini extends StatelessWidget {
-  InChatGemini({super.key,
+  const InChatGemini({super.key,
   required this.controller,
-    this.onSendTap,
+    required this.onSendTap,
     this.loading = false,
-    this.isUser = false,
     this.file,
     this.fileName,
     this.image,
     this.message,
     this.onCloseTap,
+    this.messages = const[],
   });
 
   final TextEditingController controller;
-  final void Function()? onSendTap;
+  final Function(String?) onSendTap;
   final void Function()? onCloseTap;
   final bool loading;
-  final bool isUser;
   final String? file;
   final String? fileName;
   final String? image;
   final String? message;
+  final List<InChatGeminiMessage> messages;
 
-  final List<bool> sample =  [false, true,false, true, ];
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(child: Container(
@@ -45,7 +45,7 @@ class InChatGemini extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  GeminiChatWrapPrompt(text: 'Close', onTap: onCloseTap, color: kCRedColor,)
+                  GeminiChatWrapPrompt(text: AppStrings.close, onTap: onCloseTap, color: kCRedColor,)
                 ],
               ),
               SizedBox(height: 8,),
@@ -53,7 +53,8 @@ class InChatGemini extends StatelessWidget {
                 padding: EdgeInsets.all(10),
                 width: message != null ? double.infinity : null,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
+                  color: Theme.of(context).hintColor,
+                  // color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
@@ -61,7 +62,7 @@ class InChatGemini extends StatelessWidget {
                     if(image != null) ClipRRect(
                       borderRadius: BorderRadius.circular(6),
                       // child: Image.asset('$image',fit: BoxFit.cover, height: 80,width: 80,),
-                        child: Image.file(File(''),fit: BoxFit.cover, height: 80,width: 80,),
+                        child: Image.file(File('$image'),fit: BoxFit.cover, height: 80,width: 80,),
                     ),
                     if(file != null) Container(
                       height: 35,
@@ -100,15 +101,33 @@ class InChatGemini extends StatelessWidget {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    if(message != null) GeminiChatWrapPrompt(text: 'Explain Message'),
-                    if(image != null) GeminiChatWrapPrompt(text: 'Describe Image'),
-                    if(file != null) GeminiChatWrapPrompt(text: 'Analyse File'),
-                    if(message != null) GeminiChatWrapPrompt(text: 'Translate to Igbo'),
-                    if(message != null) GeminiChatWrapPrompt(text: 'Translate to Hausa'),
-                    if(message != null) GeminiChatWrapPrompt(text: 'Translate to Yoruba'),
-                    if(message != null) GeminiChatWrapPrompt(text: 'Translate to English'),
-                    if(message != null) GeminiChatWrapPrompt(text: 'Translate to Spanish'),
-                    if(message != null) GeminiChatWrapPrompt(text: 'Translate to French'),
+                    if(message != null) GeminiChatWrapPrompt(text:AppStrings.explainMessage,onTap: (){
+                      onSendTap(AppStrings.explainMessage);
+                    },),
+                    if(image != null) GeminiChatWrapPrompt(text: AppStrings.describeImage, onTap: (){
+                      onSendTap(AppStrings.describeImage);
+                    },),
+                    if(file != null) GeminiChatWrapPrompt(text: AppStrings.analyseFile,onTap: (){
+                      onSendTap(AppStrings.analyseFile);
+                    },),
+                    if(message != null) GeminiChatWrapPrompt(text: AppStrings.translateIgbo, onTap: (){
+                      onSendTap(AppStrings.translateIgbo);
+                    },),
+                    if(message != null) GeminiChatWrapPrompt(text: AppStrings.translateHausa, onTap: (){
+                      onSendTap(AppStrings.translateHausa);
+                    },),
+                    if(message != null) GeminiChatWrapPrompt(text: AppStrings.translateYoruba, onTap: (){
+                      onSendTap(AppStrings.translateYoruba);
+                    },),
+                    if(message != null) GeminiChatWrapPrompt(text: AppStrings.translateEnglish, onTap: (){
+                      onSendTap(AppStrings.translateEnglish);
+                    },),
+                    if(message != null) GeminiChatWrapPrompt(text: AppStrings.translateSpanish, onTap: (){
+                      onSendTap(AppStrings.translateSpanish);
+                    },),
+                    if(message != null) GeminiChatWrapPrompt(text: AppStrings.translateFrench, onTap: (){
+                      onSendTap(AppStrings.translateFrench);
+                    },),
                   ],
                 ),
               ),
@@ -119,18 +138,29 @@ class InChatGemini extends StatelessWidget {
                   width: double.infinity,
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
+                    // color: Theme.of(context).cardColor,
+                    color: Theme.of(context).hintColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: ListView.builder(
-                    itemCount: sample.length,
+                  child: messages.isEmpty ?
+                  Center(
+                    child: Text(
+                      AppStrings.startConversationWithGemini,
+                      style: Theme.of(context).textTheme.bodySmall,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  )
+                      : ListView.builder(
+                    itemCount: messages.length,
                       // physics: BouncingScrollPhysics(),
                       itemBuilder: (_,i){
-                     final bo = sample[i];
+                     final content = messages[i];
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 5.0),
                       child: Column(
-                        crossAxisAlignment: bo ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+                        crossAxisAlignment: content.isUser ? CrossAxisAlignment.start : CrossAxisAlignment.end,
                         children: [
                           Container(
                             constraints: BoxConstraints(
@@ -140,14 +170,14 @@ class InChatGemini extends StatelessWidget {
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(15),
                                 topRight: Radius.circular(15),
-                                bottomLeft: bo ? Radius.circular(0) : Radius.circular(15),
-                                bottomRight: bo ? Radius.circular(15) : Radius.circular(0),
+                                bottomLeft: content.isUser ? Radius.circular(0) : Radius.circular(15),
+                                bottomRight: content.isUser ? Radius.circular(15) : Radius.circular(0),
                               ),
                               border: Border.all(width: 2.5,color: kCBlueShadeColor),
                             ),
                             padding: EdgeInsets.all(10),
                             child: MarkdownBody(
-                              data: 'A sample message to use for Gemini Capabilities...',
+                              data: content.message,
                               selectable: true,
                               styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context),).copyWith(
                                 p: Theme.of(context).textTheme.bodySmall,
@@ -171,10 +201,12 @@ class InChatGemini extends StatelessWidget {
              SizedBox(height: 20,),
               JnTextField(
                 controller: controller,
-                hintText: 'What do you want gemini to do?',
+                hintText: AppStrings.geminiHintText,
                 keyboardType: TextInputType.text,
                 suffix: GestureDetector(
-                  onTap: onSendTap,
+                  onTap: (){
+                    onSendTap(null);
+                  },
                   child: loading ?
                   SizedBox(height: 2, width: 20, child: CircularProgressIndicator(color: kCBlueShadeColor,),) :
                   Icon(Icons.send, color: kCBlueShadeColor, size: settingsIconSize,),

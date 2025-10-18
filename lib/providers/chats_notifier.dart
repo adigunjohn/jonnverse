@@ -151,7 +151,8 @@ class ChatNotifier extends Notifier<ChatState> {
     final result = await _filePickerService.pickImage(source: source);
     if(result != null){
       clearFile();
-      state = state.copyWith(filePath: result.path, fileName: result.name, isImagePicked: true, isFilePicked: false);
+      final permFilePath = await _fileRepo.pickAndSaveImage(result.path);
+      state = state.copyWith(filePath: permFilePath.path, fileName: result.name, isImagePicked: true, isFilePicked: false);
     }
   }
 

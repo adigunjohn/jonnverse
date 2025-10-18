@@ -166,8 +166,9 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
                                             _navigationService.push(ShowImageView(image: path, isDownloaded: true,));
                                           } else if(message.senderId == widget.userId){
                                             _navigationService.push(ShowImageView(image: message.filePath,isUser: true,));
+                                            // _navigationService.push(ShowImageView(image: message.image,));
                                           }
-                                          _navigationService.push(ShowImageView(image: message.image));
+                                          // _navigationService.push(ShowImageView(image: message.image));
                                         },
                                         onFileTap: () async {
                                           if (downloadState == Download.downloaded) {
@@ -210,8 +211,9 @@ class _ChatViewState extends ConsumerState<GeminiChatView> {
                                                 _navigationService.push(ShowImageView(image: path,isDownloaded: true,));
                                               } else if(message.senderId == widget.userId){
                                                 _navigationService.push(ShowImageView(image: message.filePath,isUser: true,));
+                                                // _navigationService.push(ShowImageView(image: message.image,));
                                               }
-                                              _navigationService.push(ShowImageView(image: message.image));
+                                              // _navigationService.push(ShowImageView(image: message.image));
                                             },
                                             onFileTap: () async {
                                               if (downloadState == Download.downloaded) {

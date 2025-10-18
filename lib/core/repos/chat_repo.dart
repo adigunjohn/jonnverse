@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:jonnverse/app/config/locator.dart';
 import 'package:jonnverse/core/enums/download.dart';
+import 'package:jonnverse/core/models/in_chat_gemini_message.dart';
 import 'package:jonnverse/core/models/jmessages.dart';
 import 'package:jonnverse/core/models/metadata.dart';
 import 'package:jonnverse/core/services/firebase_service.dart';
@@ -92,6 +93,36 @@ class ChatRepo{
     catch(e){
       log('${AppStrings.chatRepoLog}Error getting response from ${message.receiverName}: $e');
       throw Exception('Failed to get response from ${message.receiverName}. Please try again.');
+    }
+  }
+
+
+  Future<String?> inChatGeminiSendMessage({required List<InChatGeminiMessage> messages, File? file, required String prompt})async{
+    try{
+      String? response;
+      List<Content>? history = await _geminiAIService.convertInChatGeminiMessagesToContentHistory(messages);
+      if(file != null){
+        final otherFile = await _geminiAIService.convertFileToDataPart(file);
+        response = await _geminiAIService.geminiGenerateWithTextAndFile(
+          prompt: prompt,
+          fileBytes: otherFile!.bytes,
+          fileMimeType: otherFile.mimeType,
+          conversationHistory: history,
+        );
+      }
+      else{
+        response = await _geminiAIService.geminiGenerateWithText(prompt: prompt, conversationHistory: history);
+      }
+      if(response == null)log('${AppStrings.chatRepoLog}[InChatGemini] response from Gemini is null');
+      log('${AppStrings.chatRepoLog}[InChatGemini] Response received from Gemini successfully');
+      return response;
+    } on GenerativeAIException catch(e){
+      log('${AppStrings.chatRepoLog}[InChatGemini] GenerativeAI Error sending message to Gemini: ${e.message}');
+      throw Exception('Failed to get response from Gemini. Please try again.');
+    }
+    catch(e){
+      log('${AppStrings.chatRepoLog}[InChatGemini] Error getting response from Gemini: $e');
+      throw Exception('Failed to get response from Gemini. Please try again.');
     }
   }
 

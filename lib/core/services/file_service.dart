@@ -52,7 +52,12 @@ class FileService {
     if (await file.exists()) await file.delete();
   }
 
-
-
+  Future<File> pickAndSaveImage(String filepath)async{
+    final tempFile = File(filepath);
+    final dir = await appDirectory();
+    final fileName = path.basename(filepath);
+    final savedImage = await tempFile.copy('$dir/$fileName');
+    return savedImage;
+  }
 }
 

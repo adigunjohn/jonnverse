@@ -59,6 +59,17 @@ class FileRepo {
     }
   }
 
+  Future<File> pickAndSaveImage(String filepath) async {
+    try {
+      final pickedImage = await _fileService.pickAndSaveImage(filepath);
+      log('${AppStrings.fileRepoLog}Image picked and saved successfully',);
+      return pickedImage;
+    }catch(e){
+      log('${AppStrings.fileRepoLog}Error picking and saving Image: $e');
+      throw Exception('Failed to pick and save Image');
+    }
+  }
+
   Future<bool> fileExists(String filename) async {
     try {
       final value = await _fileService.fileExists(filename);
