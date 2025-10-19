@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +10,8 @@ import 'package:jonnverse/app/config/routes.dart';
 import 'package:jonnverse/core/enums/apptheme.dart';
 import 'package:jonnverse/core/services/dialog_service.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
+import 'package:jonnverse/core/services/snackbar_service.dart';
+import 'package:jonnverse/providers/all_users_notifier.dart';
 import 'package:jonnverse/providers/auth_notifier.dart';
 import 'package:jonnverse/providers/nav_notifier.dart';
 import 'package:jonnverse/providers/theme_notifier.dart';
@@ -29,18 +33,20 @@ class SettingsView extends ConsumerStatefulWidget {
 class _SettingsViewState extends ConsumerState<SettingsView> {
   final DialogService _dialogService = locator<DialogService>();
   final NavigationService _navigationService = locator<NavigationService>();
+  final SnackBarService _snackBarService = locator<SnackBarService>();
   final List<String> _themeMessage = [AppStrings.systemTheme, AppStrings.lightTheme, AppStrings.darkTheme];
   @override
   Widget build(BuildContext context) {
     final theme = ref.watch(themeProvider);
     final user = ref.watch(userProvider);
     final auth = ref.watch(authProvider);
+    final blockedUsers = user.user?.blockedUsers ?? [];
     return Scaffold(
       appBar: AppBar(
         title: Text(AppStrings.settings, style: Theme.of(context).textTheme.displayLarge,),
         automaticallyImplyLeading: false,
       ),
-      body: SafeArea(child: SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.only(
             top: 20,
@@ -201,7 +207,56 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                 subTitle: AppStrings.blockedSubTitle,
                 icon: Icons.block,
                 iconColor: kCRedColor,
-                onTap: (){},
+                onTap: (){
+                  _dialogService.showBottom(context, title: 'Blocked Users', subtitle: 'A list of Jonnverse users that you have blocked',
+                      child: blockedUsers.isEmpty ?
+                      Center(
+                        child: Text(
+                          'No blocked users...',
+                          style: Theme.of(context).textTheme.bodySmall,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ) : Column(
+                            children: blockedUsers.map((e){
+                              final getBlockedUser = ref.watch(otherUserFutureProvider(e));
+                              final blockedUser = getBlockedUser.when(
+                                  data: (user) => user?.name ?? 'Unknown',
+                                  loading: (){return '';}, error: (e, s) => 'Nil');
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                        Text(
+                                          blockedUser,
+                                          style: Theme.of(context).textTheme.bodySmall,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        IconButton(onPressed: (){
+                                          _dialogService.showAlertDialog(context, title: 'Unblock User', subtitle: 'Are you sure you want to unblock?',
+                                              actions: [TextButton(onPressed: _navigationService.pop, child: Text('Cancel')),
+                                                TextButton(
+                                                    onPressed: () async{
+                                                      final error = await ref.read(userProvider.notifier).toggleBlockUser(e);
+                                                      if(error != null){_snackBarService.showSnackBar(message: error);}
+                                                      else{
+                                                        _snackBarService.showSnackBar(message: 'Successfully unblocked');
+                                                      }
+                                                    },
+                                                    child: Text('Unblock', style: TextStyle(color: kCRedColor))
+                                                ),
+                                              ]
+                                          );
+                                        }, icon: Icon(Icons.block, color: kCRedColor, size: settingsIconSize,),),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          )
+                  );
+                }
               ),
               SettingsTile(
                 title: AppStrings.logout,
@@ -233,15 +288,17 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
               ),
               SettingsTile(
                 title: AppStrings.closeApp,
+                showDivider: false,
                 onTap: (){
                   SystemNavigator.pop();
                 },
                 icon: Icons.exit_to_app_rounded,
               ),
+              SizedBox(height: 20,),
             ],
           ),
         ),
-      ),),
+      ),
     );
   }
 }

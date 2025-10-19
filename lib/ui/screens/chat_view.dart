@@ -11,8 +11,10 @@ import 'package:jonnverse/core/models/jmessages.dart';
 import 'package:jonnverse/core/services/dialog_service.dart';
 import 'package:jonnverse/core/services/navigation_service.dart';
 import 'package:jonnverse/core/services/snackbar_service.dart';
+import 'package:jonnverse/providers/all_users_notifier.dart';
 import 'package:jonnverse/providers/chats_notifier.dart';
 import 'package:jonnverse/providers/in_chat_gemini_notifier.dart';
+import 'package:jonnverse/providers/user_notifier.dart';
 import 'package:jonnverse/ui/common/strings.dart';
 import 'package:jonnverse/ui/common/styles.dart';
 import 'package:jonnverse/ui/common/ui_helpers.dart';
@@ -54,10 +56,12 @@ class _ChatViewState extends ConsumerState<ChatView> {
   final ScrollController _aiScrollController = ScrollController();
 
   late final ChatIds _chatIds;
+  // late final String _otherUserId;
   @override
   void initState() {
     super.initState();
     _chatIds = ChatIds(senderId: widget.userId!, receiverId: widget.receiverId!);
+    // _otherUserId = widget.receiverId!;
   }
   @override
   void dispose() {
@@ -73,6 +77,17 @@ class _ChatViewState extends ConsumerState<ChatView> {
     final chatMessages = ref.watch(chatMessagesStreamProvider(_chatIds));
     final chatProvider = ref.watch(chatNotifierProvider);
     final inChatGeminiProvider = ref.watch(inChatGeminiNotifierProvider);
+    final currentUser = ref.watch(userProvider);
+    //final otherUser = ref.watch(otherUserFutureProvider(_otherUserId));
+    final otherUser = ref.watch(otherUserFutureProvider(widget.receiverId!));
+
+    final iBlockedUser = currentUser.user?.blockedUsers?.contains(widget.receiverId) ?? false;
+    final userBlockedMe = otherUser.when(
+    data: (otherUser) => otherUser?.blockedUsers?.contains(widget.userId) ?? false,
+    loading: (){return false;}, error: (e, s) => false);
+
+    final isBlocked = iBlockedUser || userBlockedMe;
+
     return Scaffold(
       appBar: AppBar(
         leadingWidth: double.infinity,
@@ -130,10 +145,32 @@ class _ChatViewState extends ConsumerState<ChatView> {
               // Spacer(),
               SizedBox(width: 10),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  _dialogService.showAlertDialog(context,
+                      title: iBlockedUser ? 'Unblock User' : 'Block User',
+                      subtitle: iBlockedUser
+                          ? 'Are you sure you want to unblock ${widget.receiverName}?'
+                          : 'Block ${widget.receiverName}? You will no longer be able to send or receive messages.',
+                      actions: [
+                        TextButton(onPressed: _navigationService.pop, child: Text('Cancel')),
+                        TextButton(
+                            onPressed: () async{
+                              _navigationService.pop();
+                             final error = await ref.read(userProvider.notifier).toggleBlockUser(widget.receiverId!);
+                             if(error != null){_snackBarService.showSnackBar(message: error);}
+                             else{
+                               _navigationService.pop();
+                               _snackBarService.showSnackBar(message: 'Successfully blocked ${widget.receiverName}');
+                             }
+                            },
+                            child: Text(iBlockedUser ? 'Unblock' : 'Block', style: TextStyle(color: kCRedColor))
+                        ),
+                      ]
+                  );
+                },
                 child: Icon(
                   Icons.block,
-                  color: kCWhiteColor,
+                  color: iBlockedUser ? kCRedColor : kCWhiteColor,
                   size: usersIconSize,
                 ),
               ),
@@ -428,6 +465,30 @@ class _ChatViewState extends ConsumerState<ChatView> {
                       child: CircularProgressIndicator(color: kCAccentColor),
                     );}
               ),
+              isBlocked ? Padding(
+                padding: const EdgeInsets.only(bottom: 15.0, right: 15, left: 15),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).hintColor,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        iBlockedUser
+                            ? 'You have blocked this user. Unblock them to send messages.'
+                            : 'You can no longer reply to this conversation.',
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                  ),
+                ),
+              ) :
               ChatField(
                 controller: _controller,
                 image: chatProvider.isImagePicked ? chatProvider.filePath : null,

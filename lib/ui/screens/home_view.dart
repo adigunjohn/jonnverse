@@ -70,6 +70,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   ),
                 );
               }
+              final currentUser = sender.user;
+              final blockedByMe = currentUser?.blockedUsers ?? [];
+              final filteredChats = allChats.where((chat) => !blockedByMe.contains(chat.receiverId)).toList();
               return Column(
                   children: [
                     Expanded(
@@ -124,9 +127,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
                         // ),
                         ListView.builder(
                             padding: const EdgeInsets.only(right: 15, left: 15),
-                            itemCount: allChats.length,
+                            itemCount: filteredChats.length,
                             itemBuilder: (context, index){
-                              final chat = allChats[index];
+                              final chat = filteredChats[index];
                               final otherUser = ref.watch(otherUserFutureProvider(chat.receiverId));
                               // log('otherUser: ${otherUser.value}');
                               return ChatTile(

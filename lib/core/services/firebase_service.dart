@@ -157,7 +157,17 @@ class FirebaseService {
     return messages;
   }
 
+  Future<void> blockUser(String currentUserId, String userIdToBlock) async {
+    await usersCollection.doc(currentUserId).update({
+      'blockedUsers': FieldValue.arrayUnion([userIdToBlock])
+    });
+  }
 
+  Future<void> unblockUser(String currentUserId, String userIdToUnblock) async {
+    await usersCollection.doc(currentUserId).update({
+      'blockedUsers': FieldValue.arrayRemove([userIdToUnblock])
+    });
+  }
   // Stream getAllChats() {
   //   final allUsers = chatsCollection.snapshots();
   //   final users = allUsers.map((e){

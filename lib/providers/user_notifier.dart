@@ -92,5 +92,28 @@ class UserNotifier extends Notifier<UserState> {
     }
   }
 
+  Future<String?> toggleBlockUser(String otherUserId) async {
+    if (state.user == null) return 'Invalid User, kindly login again';
+    if(await _connectivityRepo.hasInternet() == false)return AppStrings.noInternet;
+    try {
+      final updatedUser = await _userRepo.getOtherUsersDetails(state.user!.uid);
+      if (updatedUser != null) {
+        await updateUser(updatedUser);
+      }
+      final currentUser = state.user;
+      if (currentUser == null) return 'Invalid User, kindly login again';
+      final isBlocked = currentUser.blockedUsers?.contains(otherUserId) ?? false;
+      if (isBlocked) {
+        await _userRepo.unblockUser(currentUserId: currentUser.uid, userIdToUnblock: otherUserId);
+      } else {
+        await _userRepo.blockUser(currentUserId: currentUser.uid, userIdToBlock: otherUserId);
+      }
+      return null;
+    } catch (e) {
+      log('Error toggling block status: $e');
+      return e.toString().replaceFirst('Exception: ', '');
+    }
+  }
+
 }
 final userProvider = NotifierProvider<UserNotifier, UserState>(UserNotifier.new);

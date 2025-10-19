@@ -89,5 +89,21 @@ class UserRepo{
       throw Exception('Failed to upload profile picture. Please try again');
     }
   }
+  Future<void> blockUser({required String currentUserId, required String userIdToBlock}) async {
+    try{
+      await _firebaseService.blockUser(currentUserId, userIdToBlock);
+    }catch(e){
+      log('${AppStrings.userRepoLog}failed to block user $userIdToBlock : $e');
+      throw Exception('Failed to block user');
+    }
+  }
 
+  Future<void> unblockUser({required String currentUserId, required String userIdToUnblock}) async {
+    try{
+      await _firebaseService.unblockUser(currentUserId, userIdToUnblock);
+    }catch(e){
+      log('${AppStrings.userRepoLog}failed to unblock user $userIdToUnblock : $e');
+      throw Exception('Failed to unblock user');
+    }
+  }
 }

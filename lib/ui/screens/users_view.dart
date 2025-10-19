@@ -123,6 +123,9 @@ class UsersView extends ConsumerWidget {
           //     ),
             allUsers.when(
                 data: (users){
+                  // final currentUser = sender.user;
+                  // final blockedByMe = currentUser?.blockedUsers ?? [];
+                  // final filteredUsers = users.where((user) => !blockedByMe.contains(user.uid)).toList();
                   return Column(
                           children: [
                             Text(
