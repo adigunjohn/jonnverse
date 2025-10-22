@@ -236,16 +236,19 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                                         ),
                                         IconButton(onPressed: (){
                                           _dialogService.showAlertDialog(context, title: 'Unblock User', subtitle: 'Are you sure you want to unblock?',
-                                              actions: [TextButton(onPressed: _navigationService.pop, child: Text('Cancel')),
+                                              actions: [TextButton(
+                                                  onPressed: _navigationService.pop, child: Text('Cancel', style: Theme.of(context).textTheme.bodySmall,)),
                                                 TextButton(
                                                     onPressed: () async{
+                                                      _navigationService.pop();
+                                                      _navigationService.pop();
                                                       final error = await ref.read(userProvider.notifier).toggleBlockUser(e);
                                                       if(error.$1 != null){_snackBarService.showSnackBar(message: error.$1!);}
                                                       else{
                                                         _snackBarService.showSnackBar(message: 'Successfully unblocked');
                                                       }
                                                     },
-                                                    child: Text('Unblock', style: TextStyle(color: kCRedColor))
+                                                    child: Text('Unblock', style: Theme.of(context).textTheme.bodySmall!.copyWith(color: kCRedColor))
                                                 ),
                                               ]
                                           );
