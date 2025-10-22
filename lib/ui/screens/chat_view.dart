@@ -152,18 +152,22 @@ class _ChatViewState extends ConsumerState<ChatView> {
                           ? 'Are you sure you want to unblock ${widget.receiverName}?'
                           : 'Block ${widget.receiverName}? You will no longer be able to send or receive messages.',
                       actions: [
-                        TextButton(onPressed: _navigationService.pop, child: Text('Cancel')),
+                        TextButton(onPressed: _navigationService.pop, child: Text('Cancel',style: Theme.of(context).textTheme.bodySmall),),
                         TextButton(
                             onPressed: () async{
                               _navigationService.pop();
                              final error = await ref.read(userProvider.notifier).toggleBlockUser(widget.receiverId!);
-                             if(error != null){_snackBarService.showSnackBar(message: error);}
+                             if(error.$1 != null){_snackBarService.showSnackBar(message: error.$1!);}
                              else{
-                               _navigationService.pop();
-                               _snackBarService.showSnackBar(message: 'Successfully blocked ${widget.receiverName}');
+                               if(error.$2 == 'blocked'){
+                                 _navigationService.pop();
+                                 _snackBarService.showSnackBar(message: 'Successfully blocked ${widget.receiverName}');
+                               }else if(error.$2 == 'unblocked'){
+                                 _snackBarService.showSnackBar(message: 'Successfully unblocked ${widget.receiverName}');
+                               }
                              }
                             },
-                            child: Text(iBlockedUser ? 'Unblock' : 'Block', style: TextStyle(color: kCRedColor))
+                            child: Text(iBlockedUser ? 'Unblock' : 'Block', style: Theme.of(context).textTheme.bodySmall!.copyWith(color: kCRedColor),),
                         ),
                       ]
                   );
@@ -478,8 +482,10 @@ class _ChatViewState extends ConsumerState<ChatView> {
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
                         iBlockedUser
-                            ? 'You have blocked this user. Unblock them to send messages.'
+                            ? 'You have blocked ${widget.receiverName}. Unblock them to send messages.'
                             : 'You can no longer reply to this conversation.',
+                           // : 'You\'ve been blocked. Ha Ha Ha 😂😭😂',
+                        // : 'You\’ve been blocked 😂😭😂 Ciao! Actions. Have. Consequences. 👋😅🤌',
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,

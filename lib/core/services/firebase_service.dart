@@ -156,17 +156,18 @@ class FirebaseService {
     });
     return messages;
   }
+  //
+  // Future<void> blockUser(String currentUserId, String userIdToBlock) async {
+  //   await usersCollection.doc(currentUserId).update({
+  //     'blockedUsers': FieldValue.arrayUnion([userIdToBlock])
+  //   });
+  // }
 
-  Future<void> blockUser(String currentUserId, String userIdToBlock) async {
-    await usersCollection.doc(currentUserId).update({
-      'blockedUsers': FieldValue.arrayUnion([userIdToBlock])
-    });
-  }
-
-  Future<void> unblockUser(String currentUserId, String userIdToUnblock) async {
-    await usersCollection.doc(currentUserId).update({
-      'blockedUsers': FieldValue.arrayRemove([userIdToUnblock])
-    });
+  Future<void> blockOrUnblockUser(jonnverse.User value) async {
+    // await usersCollection.doc(currentUserId).update({
+    //   'blockedUsers': FieldValue.arrayRemove([userIdToUnblock])
+    // });
+    await usersCollection.doc(value.uid).update(value.toJson());
   }
   // Stream getAllChats() {
   //   final allUsers = chatsCollection.snapshots();

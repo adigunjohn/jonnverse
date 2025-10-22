@@ -92,26 +92,34 @@ class UserNotifier extends Notifier<UserState> {
     }
   }
 
-  Future<String?> toggleBlockUser(String otherUserId) async {
-    if (state.user == null) return 'Invalid User, kindly login again';
-    if(await _connectivityRepo.hasInternet() == false)return AppStrings.noInternet;
+  Future<(String?,String?)> toggleBlockUser(String otherUserId) async {
+    if (state.user == null) return ('Invalid User, kindly login again', null);
+    if(await _connectivityRepo.hasInternet() == false)return (AppStrings.noInternet, null);
+    String result;
     try {
       final updatedUser = await _userRepo.getOtherUsersDetails(state.user!.uid);
       if (updatedUser != null) {
         await updateUser(updatedUser);
       }
       final currentUser = state.user;
-      if (currentUser == null) return 'Invalid User, kindly login again';
+      if (currentUser == null) return ('Invalid User, kindly login again',null);
       final isBlocked = currentUser.blockedUsers?.contains(otherUserId) ?? false;
+      User user;
+      final blockedList = currentUser.blockedUsers ?? [];
       if (isBlocked) {
-        await _userRepo.unblockUser(currentUserId: currentUser.uid, userIdToUnblock: otherUserId);
+        if (blockedList.isNotEmpty && blockedList.contains(otherUserId)) blockedList.remove(otherUserId);
+        result = 'unblocked';
       } else {
-        await _userRepo.blockUser(currentUserId: currentUser.uid, userIdToBlock: otherUserId);
+        blockedList.add(otherUserId);
+        result = 'blocked';
       }
-      return null;
+      user = User(uid: currentUser.uid, name: currentUser.name, email: currentUser.email, profilePic: currentUser.profilePic, blockedUsers: blockedList);
+      await _userRepo.blockOrUnblockUser(value: user);
+      await updateUser(user);
+      return (null,result);
     } catch (e) {
       log('Error toggling block status: $e');
-      return e.toString().replaceFirst('Exception: ', '');
+      return (e.toString().replaceFirst('Exception: ', ''),null);
     }
   }
 

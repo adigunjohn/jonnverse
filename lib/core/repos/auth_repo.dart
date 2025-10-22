@@ -17,7 +17,7 @@ class AuthRepo{
       final user = userCredential.user;
       if(user == null) return null;
       log('${AppStrings.authRepoLog}account created, proceeding to save user details');
-        final jonnverse.User value = jonnverse.User(uid: user.uid, name: fullName, email: user.email!,profilePic: '');
+        final jonnverse.User value = jonnverse.User(uid: user.uid, name: fullName, email: user.email!,profilePic: '', blockedUsers: []);
         await _firebaseService.saveUser(user.uid, value);
         await _hiveService.updateUser(user: value);
         await _hiveService.updateLoggedIn(loggedIn: true);
@@ -43,7 +43,7 @@ class AuthRepo{
       if(user == null) return null;
       log('${AppStrings.authRepoLog}account logged in, proceeding to save user details');
         final userDetails = await _firebaseService.getUserDetails(user.uid);
-        final jonnverse.User value = jonnverse.User(uid: userDetails.uid, name: userDetails.name, email: userDetails.email,profilePic: userDetails.profilePic);
+        final jonnverse.User value = jonnverse.User(uid: userDetails.uid, name: userDetails.name, email: userDetails.email,profilePic: userDetails.profilePic, blockedUsers: userDetails.blockedUsers);
         await _hiveService.updateUser(user: value);
         await _hiveService.updateLoggedIn(loggedIn: true);
         return value;
@@ -65,7 +65,7 @@ class AuthRepo{
       final userCredential = await _firebaseService.signUpOrInWithGoogle();
       final user = userCredential.user;
       if(user == null) return null;
-        final jonnverse.User value = jonnverse.User(uid: user.uid, name: user.displayName ?? 'No Full Name', email: user.email!,profilePic: '');
+        final jonnverse.User value = jonnverse.User(uid: user.uid, name: user.displayName ?? 'No Full Name', email: user.email!,profilePic: '',blockedUsers: []);
       await _firebaseService.saveUser(user.uid, value, merge: true);
         await _hiveService.updateUser(user: value);
         await _hiveService.updateLoggedIn(loggedIn: true);

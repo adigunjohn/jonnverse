@@ -240,7 +240,7 @@ class _SettingsViewState extends ConsumerState<SettingsView> {
                                                 TextButton(
                                                     onPressed: () async{
                                                       final error = await ref.read(userProvider.notifier).toggleBlockUser(e);
-                                                      if(error != null){_snackBarService.showSnackBar(message: error);}
+                                                      if(error.$1 != null){_snackBarService.showSnackBar(message: error.$1!);}
                                                       else{
                                                         _snackBarService.showSnackBar(message: 'Successfully unblocked');
                                                       }
