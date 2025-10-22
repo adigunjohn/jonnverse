@@ -82,7 +82,7 @@ class ChatTile extends StatelessWidget {
                     style: Theme.of(context).textTheme.headlineSmall,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Container(
+                  badgeCount >= 1 ? Container(
                     padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
@@ -91,6 +91,17 @@ class ChatTile extends StatelessWidget {
                     child: Text(
                       badgeCount.toString(),
                       style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: kCOnAccentColor),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ) : Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: kCTransparentColor,
+                    ),
+                    child: Text(
+                      '',
+                      style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: kCTransparentColor),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),

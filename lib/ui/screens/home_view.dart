@@ -137,7 +137,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                 time: formatTimeStamp(chat.timestamp.toString()),
                                 lastMessage: chat.lastMessage,
                                 // lastMessage: 'Hi🖐️, This is a sample message. We welcome you to Jonnverse.',
-                                badgeCount: 7,
+                                badgeCount: 0,
                                 userDp: chat.receiverId == AppStrings.geminiUID ? null : otherUser.value?.profilePic,
                                 userName: chat.receiverName,
                                 onTap: (){
